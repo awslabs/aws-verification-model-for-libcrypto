@@ -1,5 +1,5 @@
 /*
- * Changes to OpenSSL version 1.1.1. copyright 2019 Amazon.com, Inc. All Rights Reserved.
+ * Changes to OpenSSL version 1.1.1. copyright Amazon.com, Inc. All Rights Reserved.
  * Copyright 1995-2017 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
