@@ -15,11 +15,11 @@
 
 #include <openssl/bio.h>
 #include <openssl/evp.h>
-#include <proof_helpers/proof_allocators.h>
+#include <proof_helper  s/proof_allocators.h>
 
 /* Abstraction of the BIO struct */
 
-struct bio_st {
+struct bio_st {  
     size_t key_len;
 };
 
