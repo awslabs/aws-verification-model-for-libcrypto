@@ -28,7 +28,7 @@ struct asn1_string_st {
 };
 
 /* Could not find OpenSSL documentation */
-void ASN1_STRING_clear_free(ASN1_STRING *a)    {
+void ASN1_STRING_clear_free(ASN1_STRING *a) {
     free(a);
 }
 
