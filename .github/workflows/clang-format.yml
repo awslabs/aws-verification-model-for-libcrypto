@@ -3,7 +3,7 @@ name: test-clang-format
 on:
   pull_request:
     branches:
-      - main
+      - '*'
 
 jobs:
   build:
