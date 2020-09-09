@@ -24,12 +24,6 @@
 #define DEFAULT_IV_LEN 12       // For GCM AES and OCB AES the default is 12 (i.e. 96 bits).
 #define DEFAULT_BLOCK_SIZE 128  // For GCM AES, the default block size is 128
 
-/* Abstraction of the EVP_PKEY struct */
-struct evp_pkey_st {
-    int references;
-    EC_KEY *ec_key;
-};
-
 /*
  * Description: The EVP_PKEY_new() function allocates an empty EVP_PKEY structure which is used by OpenSSL to store
  * public and private keys. The reference count is set to 1. Return values: EVP_PKEY_new() returns either the newly
@@ -86,16 +80,6 @@ void EVP_PKEY_free(EVP_PKEY *pkey) {
         }
     }
 }
-
-/* Abstraction of the EVP_PKEY_CTX struct */
-struct evp_pkey_ctx_st {
-    bool is_initialized_for_signing;
-    bool is_initialized_for_derivation;
-    bool is_initialized_for_encryption;
-    bool is_initialized_for_decryption;
-    int rsa_pad;
-    EVP_PKEY *pkey;
-};
 
 /*
  * Description: The EVP_PKEY_CTX_new() function allocates public key algorithm context using the algorithm specified in
@@ -413,12 +397,6 @@ void EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx) {
 
 enum evp_aes { EVP_AES_128_GCM, EVP_AES_192_GCM, EVP_AES_256_GCM };
 
-/* Abstraction of the EVP_CIPHER struct */
-struct evp_cipher_st {
-    enum evp_aes from;
-    size_t block_size;
-};
-
 /*
  * Description: AES for 128, 192 and 256 bit keys in Galois Counter Mode (GCM). These ciphers require additional control
  * operations to function correctly, see the "AEAD Interface" in EVP_EncryptInit(3) section for details. Return values:
@@ -436,18 +414,6 @@ const EVP_CIPHER *EVP_aes_256_gcm(void) {
     static const EVP_CIPHER cipher = { EVP_AES_256_GCM, 128 };
     return &cipher;
 }
-
-/* Abstraction of the EVP_CIPHER_CTX struct */
-
-struct evp_cipher_ctx_st {
-    EVP_CIPHER *cipher;
-    int encrypt;
-    int iv_len;           // default: DEFAULT_IV_LEN.
-    bool iv_set;          // boolean marks if iv has been set. Default:false.
-    bool padding;         // boolean marks if padding is enabled. Default:true.
-    bool data_processed;  // boolean marks if has encrypt/decrypt final has been called. Default:false.
-    int data_remaining;   // how much is left to be encrypted/decrypted. Default: 0.
-};
 
 /*
  * EVP_CIPHER_CTX_new() creates a cipher context.
@@ -692,12 +658,6 @@ int EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl) {
 
 enum evp_sha { EVP_SHA256, EVP_SHA384, EVP_SHA512 };
 
-/* Abstraction of the EVP_MD struct */
-struct evp_md_st {
-    enum evp_sha from;
-    size_t size;
-};
-
 /*
  * Description: The SHA-2 SHA-224, SHA-256, SHA-512/224, SHA512/256, SHA-384 and SHA-512 algorithms, which generate 224,
  * 256, 224, 256, 384 and 512 bits respectively of output from a given input. Return values: These functions return a
@@ -728,13 +688,6 @@ int EVP_MD_size(const EVP_MD *md) {
     }
     return 512;
 }
-
-/* Abstraction of the EVP_MD_CTX struct */
-struct evp_md_ctx_st {
-    bool is_initialized;
-    EVP_PKEY *pkey;
-    size_t digest_size;
-};
 
 /*
  * Description: Allocates and returns a digest context.
