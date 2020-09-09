@@ -395,8 +395,6 @@ void EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx) {
     }
 }
 
-enum evp_aes { EVP_AES_128_GCM, EVP_AES_192_GCM, EVP_AES_256_GCM };
-
 /*
  * Description: AES for 128, 192 and 256 bit keys in Galois Counter Mode (GCM). These ciphers require additional control
  * operations to function correctly, see the "AEAD Interface" in EVP_EncryptInit(3) section for details. Return values:
@@ -655,8 +653,6 @@ int EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl) {
     __CPROVER_assume(rv == 0 || rv == 1);
     return rv;
 }
-
-enum evp_sha { EVP_SHA256, EVP_SHA384, EVP_SHA512 };
 
 /*
  * Description: The SHA-2 SHA-224, SHA-256, SHA-512/224, SHA512/256, SHA-384 and SHA-512 algorithms, which generate 224,
