@@ -10,5 +10,8 @@
  * Use this stub when we are *certain* there is no ec_key associated with the key.
  */
 bool evp_pkey_is_valid(EVP_PKEY *pkey) {
-    return pkey && (pkey->references > 0) && (pkey->ec_key == NULL);
+    if (!pkey) return false;
+    /* We must be sure there is no ec_key associated with the key. */
+    assert(pkey->ec_key == NULL);
+    return (pkey->references > 0);
 }
