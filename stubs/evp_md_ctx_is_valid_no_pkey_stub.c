@@ -11,6 +11,8 @@
  * associated with the digest context.
  */
 bool evp_md_ctx_is_valid(EVP_MD_CTX *ctx) {
+    if (!ctx) return false;
+    /* We must be sure there is no pkey associated with the digest context. */
     assert(ctx->pkey == NULL);
-    return ctx && ctx->is_initialized && ctx->digest_size <= EVP_MAX_MD_SIZE;
+    return ctx->is_initialized && ctx->digest_size <= EVP_MAX_MD_SIZE;
 }
