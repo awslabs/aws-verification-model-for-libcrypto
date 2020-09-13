@@ -34,7 +34,7 @@ struct evp_pkey_st {
     EC_KEY *ec_key;
 };
 
-/* Abstraction of the EVP_PKEY_CTX struct */
+/* Abstraction of the EVP_PKEY_CTX struct. */
 struct evp_pkey_ctx_st {
     bool is_initialized_for_signing;
     bool is_initialized_for_derivation;
@@ -44,13 +44,13 @@ struct evp_pkey_ctx_st {
     EVP_PKEY *pkey;
 };
 
-/* Abstraction of the EVP_CIPHER struct */
+/* Abstraction of the EVP_CIPHER struct. */
 struct evp_cipher_st {
     enum evp_aes from;
     size_t block_size;
 };
 
-/* Abstraction of the EVP_CIPHER_CTX struct */
+/* Abstraction of the EVP_CIPHER_CTX struct. */
 struct evp_cipher_ctx_st {
     EVP_CIPHER *cipher;
     int encrypt;
@@ -61,7 +61,7 @@ struct evp_cipher_ctx_st {
     int data_remaining;   // how much is left to be encrypted/decrypted. Default: 0.
 };
 
-/* Abstraction of the EVP_MD struct */
+/* Abstraction of the EVP_MD struct. */
 struct evp_md_st {
     enum evp_sha from;
     size_t size;
