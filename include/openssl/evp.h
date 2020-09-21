@@ -17,13 +17,62 @@
 #ifndef HEADER_EVP_H
 #define HEADER_EVP_H
 
-#include <stddef.h>
-
 #include <openssl/ec.h>
 #include <openssl/ossl_typ.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 #define EVP_MAX_MD_SIZE 64  /* longest known is SHA512 */
 #define EVP_PKEY_HKDF 1036  // reference from obj_mac.h
+
+enum evp_aes { EVP_AES_128_GCM, EVP_AES_192_GCM, EVP_AES_256_GCM };
+enum evp_sha { EVP_SHA256, EVP_SHA384, EVP_SHA512 };
+
+/* Abstraction of the EVP_PKEY struct. */
+struct evp_pkey_st {
+    int references;
+    EC_KEY *ec_key;
+};
+
+/* Abstraction of the EVP_PKEY_CTX struct. */
+struct evp_pkey_ctx_st {
+    bool is_initialized_for_signing;
+    bool is_initialized_for_derivation;
+    bool is_initialized_for_encryption;
+    bool is_initialized_for_decryption;
+    int rsa_pad;
+    EVP_PKEY *pkey;
+};
+
+/* Abstraction of the EVP_CIPHER struct. */
+struct evp_cipher_st {
+    enum evp_aes from;
+    size_t block_size;
+};
+
+/* Abstraction of the EVP_CIPHER_CTX struct. */
+struct evp_cipher_ctx_st {
+    EVP_CIPHER *cipher;
+    int encrypt;
+    int iv_len;           // default: DEFAULT_IV_LEN.
+    bool iv_set;          // boolean marks if iv has been set. Default:false.
+    bool padding;         // boolean marks if padding is enabled. Default:true.
+    bool data_processed;  // boolean marks if has encrypt/decrypt final has been called. Default:false.
+    int data_remaining;   // how much is left to be encrypted/decrypted. Default: 0.
+};
+
+/* Abstraction of the EVP_MD struct. */
+struct evp_md_st {
+    enum evp_sha from;
+    size_t size;
+};
+
+/* Abstraction of the EVP_MD_CTX struct. */
+struct evp_md_ctx_st {
+    bool is_initialized;
+    EVP_PKEY *pkey;
+    size_t digest_size;
+};
 
 EVP_PKEY *EVP_PKEY_new(void);
 EC_KEY *EVP_PKEY_get0_EC_KEY(EVP_PKEY *pkey);
