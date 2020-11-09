@@ -22,8 +22,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#define EVP_MAX_MD_SIZE 64  /* longest known is SHA512 */
-#define EVP_PKEY_HKDF 1036  // reference from obj_mac.h
+#define EVP_MAX_MD_SIZE 64                    /* Longest known is SHA512. */
+#define EVP_PKEY_HKDF 1036                    /* Reference from obj_mac.h. */
+#define EVP_MD_CTX_FLAG_NON_FIPS_ALLOW 0x0008 /* Allow use of non FIPS digest in FIPS mode. */
 
 enum evp_aes { EVP_AES_128_GCM, EVP_AES_192_GCM, EVP_AES_256_GCM };
 enum evp_sha { EVP_SHA256, EVP_SHA384, EVP_SHA512 };
