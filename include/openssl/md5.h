@@ -46,7 +46,9 @@
 #define MD5_DIGEST_LENGTH 16
 
 typedef struct MD5state_st {
+    /* Internal buffers used during the computation. */
     MD5_LONG A, B, C, D;
+    /* The other subfields keep information on the running hash. */
     MD5_LONG Nl, Nh;
     MD5_LONG data[MD5_LBLOCK];
     unsigned int num;

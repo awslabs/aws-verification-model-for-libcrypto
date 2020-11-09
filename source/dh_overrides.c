@@ -20,6 +20,8 @@
 #include <openssl/ossl_typ.h>
 
 int DH_size(const DH *dh) {
+    assert(dh != NULL);
+    assert(dh->p != NULL);
     return nondet_int();
 }
 
@@ -28,6 +30,7 @@ void DH_free(DH *dh) {
 }
 
 DH *d2i_DHparams(DH **a, const unsigned char **pp, long length) {
+    assert(**pp != NULL);
     DH *dummy_dh;
     if (nondet_bool() && *pp != NULL) {
         *pp = *pp + length;

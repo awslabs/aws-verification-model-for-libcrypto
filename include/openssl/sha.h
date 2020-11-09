@@ -69,7 +69,7 @@ typedef struct SHA256state_st {
 #ifndef OPENSSL_NO_SHA512
 /*
  * Unlike 32-bit digest algorithms, SHA-512 *relies* on SHA_LONG64
- * being exactly 64-bit wide. See Implementation Notes in sha512.c
+ * being exactly 64-bit wide. See Implementation Notes in crypto/sha/sha512.c
  * for further details.
  */
 #    define SHA512_CBLOCK                                  \

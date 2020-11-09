@@ -24,14 +24,6 @@
 #include "stuffer/s2n_stuffer.h"
 #include "utils/s2n_safety.h"
 
-#ifndef OPENSSL_DH_H
-#    define OPENSSL_DH_H
-#    pragma once
-
-#    ifndef OPENSSL_NO_DEPRECATED_3_0
-#        define HEADER_DH_H
-#    endif
-
 /*
  * The structs dh_st and dh_method have been cut down to contain
  * only the parts relevant to the s2n_pkcs3_to_dh_params proof.
@@ -64,5 +56,3 @@ struct dh_method {
 void DH_free(DH *dh);
 int DH_size(const DH *dh);
 DH *d2i_DHparams(DH **a, unsigned char **pp, long length);
-
-#endif
