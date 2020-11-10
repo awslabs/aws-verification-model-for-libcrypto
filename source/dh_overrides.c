@@ -30,9 +30,11 @@ int DH_size(const DH *dh) {
 }
 
 void DH_free(DH *dh) {
+    assert(dh == NULL || openssl_DH_is_valid(dh));
     return;
 }
 
+/* Returns a dummy DH that can't be dereferenced. */
 DH *d2i_DHparams(DH **a, const unsigned char **pp, long length) {
     assert(**pp != NULL);
     DH *dummy_dh;
