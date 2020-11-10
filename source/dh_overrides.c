@@ -19,8 +19,12 @@
 #include <openssl/dh.h>
 #include <openssl/ossl_typ.h>
 
+bool openssl_DH_is_valid(const DH *dh) {
+    return __CPROVER_w_ok(dh, sizeof(*dh));
+}
+
 int DH_size(const DH *dh) {
-    assert(dh != NULL);
+    assert(openssl_DH_is_valid(dh));
     assert(dh->p != NULL);
     return nondet_int();
 }

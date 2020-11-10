@@ -53,6 +53,7 @@ struct dh_method {
     char *name;
 };
 
+bool openssl_DH_is_valid(const DH *dh);
 void DH_free(DH *dh);
 int DH_size(const DH *dh);
 DH *d2i_DHparams(DH **a, unsigned char **pp, long length);
