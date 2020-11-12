@@ -47,6 +47,7 @@ DH *d2i_DHparams(DH **a, const unsigned char **pp, long length) {
         dummy_dh->priv_key = malloc(sizeof(*(dummy_dh->priv_key)));
         dummy_dh->p        = malloc(sizeof(*(dummy_dh->p)));
         dummy_dh->g        = malloc(sizeof(*(dummy_dh->g)));
+        if (a != NULL) *a = dummy_dh;
     }
     if (nondet_bool() && *pp != NULL) {
         *pp = *pp + length;

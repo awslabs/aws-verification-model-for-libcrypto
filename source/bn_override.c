@@ -14,12 +14,12 @@
  */
 
 #include <bn_utils.h>
-#include <openssl/bn.h>
 
 /*
  * Description: BN_new() allocates and initializes a BIGNUM structure.
- * Return values: BN_new() and BN_secure_new() return a pointer to the BIGNUM initialised to the value 0. If the
- * allocation fails, they return NULL and set an error code that can be obtained by ERR_get_error(3).
+ * Return values: BN_new() and BN_secure_new() return a pointer to the
+ * BIGNUM initialised to the value 0. If the allocation fails, they
+ * return NULL and set an error code that can be obtained by ERR_get_error(3).
  */
 BIGNUM *BN_new(void) {
     BIGNUM *rv = malloc(sizeof(BIGNUM));
@@ -28,7 +28,7 @@ BIGNUM *BN_new(void) {
         rv->d              = malloc(sizeof(*(rv->d)));
     }
 
-    // Assuming error codes can be safely ignored
+    /* Assuming error codes can be safely ignored. */
 
     return rv;
 }
@@ -40,15 +40,18 @@ BIGNUM *BN_new(void) {
 BIGNUM *BN_dup(const BIGNUM *from) {
     assert(bignum_is_valid(from));
 
-    // WARNING: somehow CBMC doesn't catch the NULL-ptr deref?
-    // *dup = *from;
+    /* WARNING: somehow CBMC doesn't catch the NULL-ptr deref? */
+    /* *dup = *from; */
 
-    return BN_new();  // Guarantees that return value will be either NULL or initialized
+    /* Guarantees that return value will be either NULL or initialized. */
+    return BN_new();
 }
 
 /*
- * Description: BN_sub() subtracts b from a and places the result in r (r=a-b). r may be the same BIGNUM as a or b.
- * Return values: For all functions, 1 is returned for success, 0 on error. The return value should always be checked
+ * Description: BN_sub() subtracts b from a and places the result in
+ * r (r=a-b). r may be the same BIGNUM as a or b.
+ * Return values: For all functions, 1 is returned for success, 0 on error.
+ * The return value should always be checked
  * (e.g., if (!BN_add(r,a,b)) goto err;).
  */
 int BN_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b) {
@@ -62,20 +65,25 @@ int BN_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b) {
 }
 
 /*
- * Description: BN_free() frees the components of the BIGNUM, and if it was created by BN_new(), also the structure
- * itself.
+ * Description: BN_free() frees the components of the BIGNUM,
+ * and if it was created by BN_new(), also the structure itself.
  */
 void BN_free(BIGNUM *a) {
-    free(a);  // Assuming BIGNUMs are always allocated dynamically
+    /* Assuming BIGNUMs are always allocated dynamically. */
+    free(a);
 }
 
 /*
- * Description: BN_clear_free() additionally overwrites the data before the memory is returned to the system. If a is
- * NULL, nothing is done.
+ * Description: BN_clear_free() additionally overwrites the data
+ * before the memory is returned to the system. If a is NULL, nothing is done.
  */
 void BN_clear_free(BIGNUM *a) {
-    // No way currently to model or check that the data is cleared
+    /* No way currently to model or check that the data is cleared. */
     free(a);
+}
+
+int BN_is_zero(BIGNUM *a) {
+    return (a->top == 0);
 }
 
 /* CBMC helper functions */
@@ -86,8 +94,4 @@ bool bignum_is_valid(BIGNUM *a) {
 
 BIGNUM *bignum_nondet_alloc() {
     return malloc(sizeof(BIGNUM));
-}
-
-int BN_is_zero(BIGNUM *a) {
-    return (a->top == 0);
 }
