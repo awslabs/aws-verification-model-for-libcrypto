@@ -30,7 +30,7 @@
  * allocated EVP_PKEY structure or NULL if an error occurred.
  */
 EVP_PKEY *EVP_PKEY_new() {
-    EVP_PKEY *pkey = can_fail_malloc(sizeof(EVP_PKEY));
+    EVP_PKEY *pkey = malloc(sizeof(EVP_PKEY));
 
     if (pkey) {
         pkey->references = 1;
@@ -90,7 +90,7 @@ EVP_PKEY_CTX *EVP_PKEY_CTX_new(EVP_PKEY *pkey, ENGINE *e) {
     assert(evp_pkey_is_valid(pkey));
     assert(!e);  // Assuming is always called with e == NULL
 
-    EVP_PKEY_CTX *ctx = can_fail_malloc(sizeof(EVP_PKEY_CTX));
+    EVP_PKEY_CTX *ctx = malloc(sizeof(EVP_PKEY_CTX));
 
     if (ctx) {
         ctx->is_initialized_for_signing    = false;
@@ -113,7 +113,7 @@ EVP_PKEY_CTX *EVP_PKEY_CTX_new(EVP_PKEY *pkey, ENGINE *e) {
 EVP_PKEY_CTX *EVP_PKEY_CTX_new_id(int id, ENGINE *e) {
     // assert(!e);  // Assuming is always called with e == NULL
 
-    EVP_PKEY_CTX *ctx = can_fail_malloc(sizeof(EVP_PKEY_CTX));
+    EVP_PKEY_CTX *ctx = malloc(sizeof(EVP_PKEY_CTX));
 
     if (ctx) {
         ctx->is_initialized_for_signing    = false;
@@ -417,7 +417,7 @@ const EVP_CIPHER *EVP_aes_256_gcm(void) {
  * EVP_CIPHER_CTX_new() creates a cipher context.
  */
 EVP_CIPHER_CTX *EVP_CIPHER_CTX_new() {
-    EVP_CIPHER_CTX *cipher_ctx = can_fail_malloc(sizeof(EVP_CIPHER_CTX));
+    EVP_CIPHER_CTX *cipher_ctx = malloc(sizeof(EVP_CIPHER_CTX));
     if (cipher_ctx) {
         cipher_ctx->iv_len         = DEFAULT_IV_LEN;
         cipher_ctx->iv_set         = false;
@@ -689,7 +689,7 @@ int EVP_MD_size(const EVP_MD *md) {
  * Description: Allocates and returns a digest context.
  */
 EVP_MD_CTX *EVP_MD_CTX_new() {
-    EVP_MD_CTX *ctx = can_fail_malloc(sizeof(EVP_MD_CTX));
+    EVP_MD_CTX *ctx = malloc(sizeof(EVP_MD_CTX));
 
     if (ctx) {
         ctx->is_initialized = false;
@@ -855,7 +855,7 @@ int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sig, size_t sigl
  * Description: HMAC_CTX_init() initialises a HMAC_CTX before first use. It must be called.
  */
 void HMAC_CTX_init(HMAC_CTX *ctx) {
-    HMAC_CTX *ctx_new = can_fail_malloc(sizeof(HMAC_CTX));
+    HMAC_CTX *ctx_new = malloc(sizeof(HMAC_CTX));
     __CPROVER_assume(ctx_new);  // cannot be null
     ctx_new->is_initialized = true;
     ctx_new->md             = malloc(sizeof(EVP_MD));
@@ -959,7 +959,7 @@ bool evp_pkey_is_valid(EVP_PKEY *pkey) {
 
 /* Helper function for CBMC proofs: allocates EVP_PKEY nondeterministically. */
 EVP_PKEY *evp_pkey_nondet_alloc() {
-    EVP_PKEY *pkey = can_fail_malloc(sizeof(EVP_PKEY));
+    EVP_PKEY *pkey = malloc(sizeof(EVP_PKEY));
     return pkey;
 }
 
@@ -1001,7 +1001,7 @@ bool evp_md_ctx_is_valid(EVP_MD_CTX *ctx) {
 
 /* Helper function for CBMC proofs: allocates EVP_MD_CTX nondeterministically. */
 EVP_MD_CTX *evp_md_ctx_nondet_alloc() {
-    return can_fail_malloc(sizeof(EVP_MD_CTX));
+    return malloc(sizeof(EVP_MD_CTX));
 }
 
 /* Helper function for CBMC proofs: checks if EVP_MD_CTX is initialized. */

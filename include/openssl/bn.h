@@ -14,15 +14,35 @@
  * permissions and limitations under the License.
  */
 
-#ifndef HEADER_BN_H
-#define HEADER_BN_H
-
+#include <cbmc_proof/nondet.h>
 #include <openssl/ossl_typ.h>
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+#ifndef HEADER_BN_H
+#    define HEADER_BN_H
+#    pragma once
+
+/* Abstraction of the BIGNUM struct. */
+struct bignum_st {
+    bool is_initialized;
+    unsigned long int *d; /* Pointer to an array of 'BN_BITS2' bit
+                           * chunks. */
+    int top;              /* Index of last used d +1. */
+    /* The next are internal book keeping for bn_expand. */
+    int dmax; /* Size of the d array. */
+    int neg;  /* one if the number is negative */
+    int flags;
+};
 
 BIGNUM *BN_new(void);
 BIGNUM *BN_dup(const BIGNUM *from);
 int BN_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 void BN_clear_free(BIGNUM *a);
 void BN_free(BIGNUM *a);
+
+int BN_is_zero(BIGNUM *a);
 
 #endif
