@@ -13,18 +13,8 @@
  * permissions and limitations under the License.
  */
 
-#include <openssl/bn.h>
-
-#include <stdbool.h>
-
-#include <proof_helpers/proof_allocators.h>
-
 #include <bn_utils.h>
-
-/* Abstraction of the BIGNUM struct */
-struct bignum_st {
-    bool is_initialized;
-};
+#include <openssl/bn.h>
 
 /*
  * Description: BN_new() allocates and initializes a BIGNUM structure.
@@ -32,9 +22,10 @@ struct bignum_st {
  * allocation fails, they return NULL and set an error code that can be obtained by ERR_get_error(3).
  */
 BIGNUM *BN_new(void) {
-    BIGNUM *rv = can_fail_malloc(sizeof(BIGNUM));
+    BIGNUM *rv = malloc(sizeof(BIGNUM));
     if (rv) {
         rv->is_initialized = true;
+        rv->d              = malloc(sizeof(*(rv->d)));
     }
 
     // Assuming error codes can be safely ignored
@@ -94,5 +85,9 @@ bool bignum_is_valid(BIGNUM *a) {
 }
 
 BIGNUM *bignum_nondet_alloc() {
-    return can_fail_malloc(sizeof(BIGNUM));
+    return malloc(sizeof(BIGNUM));
+}
+
+int BN_is_zero(BIGNUM *a) {
+    return (a->top == 0);
 }
