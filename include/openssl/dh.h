@@ -18,11 +18,18 @@
 #include <cbmc_proof/nondet.h>
 #include <openssl/bn.h>
 #include <openssl/ffc.h>
-#include <stdint.h>
 
 #include "api/s2n.h"
 #include "stuffer/s2n_stuffer.h"
 #include "utils/s2n_safety.h"
+
+#ifndef OPENSSL_DH_H
+#    define OPENSSL_DH_H
+#    pragma once
+
+#    ifndef OPENSSL_NO_DEPRECATED_3_0
+#        define HEADER_DH_H
+#    endif
 
 /*
  * The structs dh_st and dh_method have been cut down to contain
@@ -43,6 +50,7 @@ struct dh_st {
     BIGNUM *priv_key; /* x */
     int flags;
     BIGNUM *p;
+    BIGNUM *q;
     BIGNUM *g;
 
     /* Provider data */
@@ -57,3 +65,7 @@ bool openssl_DH_is_valid(const DH *dh);
 void DH_free(DH *dh);
 int DH_size(const DH *dh);
 DH *d2i_DHparams(DH **a, unsigned char **pp, long length);
+int DH_check(DH *dh, int *codes);
+void DH_get0_pqg(const DH *dh, const BIGNUM **p, const BIGNUM **q, const BIGNUM **g);
+
+#endif
