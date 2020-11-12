@@ -1029,6 +1029,6 @@ void evp_md_ctx_shallow_free(EVP_MD_CTX *ctx) {
 }
 
 void EVP_MD_CTX_set_flags(EVP_MD_CTX *ctx, int flags) {
-    assert(__CPROVER_r_ok(ctx, sizeof(*ctx)));
+    assert(__CPROVER_w_ok(ctx, sizeof(*ctx)));
     ctx->flags |= flags;
 }
