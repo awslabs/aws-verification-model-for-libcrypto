@@ -73,6 +73,7 @@ struct evp_md_ctx_st {
     bool is_initialized;
     EVP_PKEY *pkey;
     size_t digest_size;
+    unsigned long flags;
 };
 
 EVP_PKEY *EVP_PKEY_new(void);
@@ -94,6 +95,7 @@ int EVP_PKEY_CTX_set_rsa_oaep_md(EVP_PKEY_CTX *ctx, const EVP_MD *md);
 int EVP_PKEY_CTX_set_rsa_mgf1_md(EVP_PKEY_CTX *ctx, const EVP_MD *md);
 int EVP_PKEY_encrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen, const unsigned char *in, size_t inlen);
 int EVP_PKEY_decrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen, const unsigned char *in, size_t inlen);
+void EVP_MD_CTX_set_flags(EVP_MD_CTX *ctx, int flags);
 
 EVP_MD_CTX *EVP_MD_CTX_new(void);
 int EVP_MD_CTX_size(const EVP_MD_CTX *ctx);
