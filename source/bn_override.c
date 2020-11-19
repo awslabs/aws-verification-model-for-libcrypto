@@ -69,8 +69,10 @@ int BN_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b) {
  * and if it was created by BN_new(), also the structure itself.
  */
 void BN_free(BIGNUM *a) {
-    /* Assuming BIGNUMs are always allocated dynamically. */
-    free(a);
+    if (a != NULL) {
+        free(a->d);
+        free(a);
+    }
 }
 
 /*
