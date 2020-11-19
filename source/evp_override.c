@@ -72,7 +72,7 @@ int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey, EC_KEY *key) {
 void EVP_PKEY_free(EVP_PKEY *pkey) {
     if (pkey != NULL &&
         /* We must include this extra guard to avoid spurious arithmetic underflows. */
-        pkey->references >= 0) {
+        pkey->references > 0) {
         pkey->references -= 1;
         if (pkey->references == 0) {
             EC_KEY_free(pkey->ec_key);

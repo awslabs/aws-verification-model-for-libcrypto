@@ -186,7 +186,7 @@ int EC_KEY_up_ref(EC_KEY *key) {
 void EC_KEY_free(EC_KEY *key) {
     if (key != NULL &&
         /* We must include this extra guard to avoid spurious arithmetic underflows. */
-        key->references >= 0) {
+        key->references > 0) {
         key->references -= 1;
         if (key->references == 0) {
             EC_GROUP_free(key->group);
