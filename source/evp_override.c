@@ -818,6 +818,7 @@ int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s) {
     // s can be NULL
 
     __CPROVER_havoc_object(md);
+    if (s) *s = EVP_MD_CTX_size(ctx);
     ctx->digest = NULL; /* No additional calls to EVP_DigestUpdate. */
 
     if (nondet_bool()) {
@@ -826,8 +827,6 @@ int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s) {
         if (s) *s = garbage;
         return 0;
     }
-
-    if (s) *s = EVP_MD_CTX_size(ctx);
 
     return 1;
 }
