@@ -16,6 +16,10 @@
 #include <ec_utils.h>
 #include <openssl/sha.h>
 
+/*
+ * All macros extracted from the original openssl implementation.
+ * Per https://github.com/openssl/openssl/blob/e39e295e205ab8461d3ac814129bbb08c2d1266d/crypto/sha/sha_local.h.
+ */
 #define INIT_DATA_h0 0x67452301UL
 #define INIT_DATA_h1 0xefcdab89UL
 #define INIT_DATA_h2 0x98badcfeUL

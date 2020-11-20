@@ -20,10 +20,8 @@
 #include <limits.h>
 
 #include <bn_utils.h>
-#include <ec_utils.h>
 
 #include <openssl/asn1.h>
-#include <openssl/bn.h>
 #include <openssl/objects.h>
 #include <openssl/ossl_typ.h>
 

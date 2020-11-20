@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-#include <openssl/ec.h>
+#include <ec_utils.h>
 
 /*
  * Description: In order to construct a builtin curve use the function EC_GROUP_new_by_curve_name and provide the nid of
