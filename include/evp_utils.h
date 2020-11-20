@@ -6,6 +6,7 @@
 #ifndef EVP_UTILS_H
 #define EVP_UTILS_H
 
+#include <ec_utils.h>
 #include <openssl/evp.h>
 
 size_t evp_md_ctx_get_digest_size(EVP_MD_CTX *ctx);

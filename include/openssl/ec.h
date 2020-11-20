@@ -17,8 +17,11 @@
 #ifndef HEADER_EC_H
 #define HEADER_EC_H
 
+#include <limits.h>
+
+#include <bn_utils.h>
+
 #include <openssl/asn1.h>
-#include <openssl/bn.h>
 #include <openssl/objects.h>
 #include <openssl/ossl_typ.h>
 
@@ -35,7 +38,23 @@ typedef enum {
     POINT_CONVERSION_HYBRID = 6
 } point_conversion_form_t;
 
+/* Abstraction of the EC_GROUP struct */
+struct ec_group_st {
+    int curve_name;
+    point_conversion_form_t asn1_form;
+    BIGNUM *order;
+};
+
 typedef struct ec_group_st EC_GROUP;
+
+/* Abstraction of the EC_KEY struct */
+struct ec_key_st {
+    int references;
+    EC_GROUP *group;
+    point_conversion_form_t conv_form;
+    BIGNUM *priv_key;
+    bool pub_key_is_set;  // We never have to return a public-key object, so just having this flag is enough
+};
 
 EC_GROUP *EC_GROUP_new_by_curve_name(int nid);
 void EC_GROUP_set_point_conversion_form(EC_GROUP *group, point_conversion_form_t form);

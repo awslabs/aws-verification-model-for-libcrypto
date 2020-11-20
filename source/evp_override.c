@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-#include <ec_utils.h>
+#include <evp_utils.h>
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include <openssl/kdf.h>
@@ -70,7 +70,9 @@ int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey, EC_KEY *key) {
  * If key is NULL, nothing is done.
  */
 void EVP_PKEY_free(EVP_PKEY *pkey) {
-    if (pkey) {
+    if (pkey != NULL &&
+        /* We must include this extra guard to avoid spurious arithmetic underflows. */
+        pkey->references > 0) {
         pkey->references -= 1;
         if (pkey->references == 0) {
             EC_KEY_free(pkey->ec_key);
@@ -173,9 +175,9 @@ int EVP_PKEY_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, const u
     assert(evp_pkey_ctx_is_valid(ctx));
     assert(ctx->is_initialized_for_signing == true);
     assert(siglen);
-    assert(!sig || (*siglen >= max_signature_size() && AWS_MEM_IS_WRITABLE(sig, *siglen)));
+    assert(!sig || (*siglen >= max_signature_size() && __CPROVER_w_ok(sig, *siglen)));
     assert(tbs);
-    assert(AWS_MEM_IS_READABLE(tbs, tbslen));
+    assert(__CPROVER_r_ok(tbs, tbslen));
 
     if (nondet_bool()) {
         int rv;
@@ -471,12 +473,12 @@ int EVP_CIPHER_CTX_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg, void *ptr) {
     assert(IMPLIES(type == EVP_CTRL_GCM_GET_TAG, ctx->encrypt == 1));
     assert(IMPLIES(type == EVP_CTRL_GCM_GET_TAG, ctx->data_processed == true));
     /* Need to be able to write taglen (arg) bytes to buffer ptr. */
-    assert(IMPLIES(type == EVP_CTRL_GCM_GET_TAG, AWS_MEM_IS_WRITABLE(ptr, arg)));
+    assert(IMPLIES(type == EVP_CTRL_GCM_GET_TAG, __CPROVER_w_ok(ptr, arg)));
 
     /* Only legal when decrypting data. */
     assert(IMPLIES(type == EVP_CTRL_GCM_SET_TAG, ctx->encrypt == 0));
     /* Need to be able to write taglen (arg) bytes to buffer ptr. */
-    assert(IMPLIES(type == EVP_CTRL_GCM_SET_TAG, AWS_MEM_IS_WRITABLE(ptr, arg)));
+    assert(IMPLIES(type == EVP_CTRL_GCM_SET_TAG, __CPROVER_w_ok(ptr, arg)));
 
     int rv;
     __CPROVER_assume(rv == 0 || rv == 1);
@@ -565,14 +567,14 @@ int EVP_EncryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl, const 
         ctx->data_remaining = inl - out_size;
     }
     /*
-     * This check is redundant with the following AWS_MEM_IS_WRITABLE.
-     * AWS_MEM_IS_WRITABLE is a macro for __CPROVER_w_ok primitive, which
+     * This check is redundant with the following __CPROVER_w_ok.
+     * __CPROVER_w_ok is a macro for __CPROVER_w_ok primitive, which
      * should return true if out is writable upt to out_size bytes;
-     * however, AWS_MEM_IS_WRITABLE has been replaced by a simple nullness check for now.
+     * however, __CPROVER_w_ok has been replaced by a simple nullness check for now.
      * Thus, we also include an additional check using __CPROVER_OBJECT_SIZE.
      */
     assert(__CPROVER_OBJECT_SIZE(out) >= out_size);
-    assert(AWS_MEM_IS_WRITABLE(out, out_size));
+    assert(__CPROVER_w_ok(out, out_size));
     *outl = out_size;
     return rv;
 }
@@ -603,14 +605,14 @@ int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl, const 
         ctx->data_remaining = inl - out_size;
     }
     /*
-     * This check is redundant with the following AWS_MEM_IS_WRITABLE.
-     * AWS_MEM_IS_WRITABLE is a macro for __CPROVER_w_ok primitive, which
+     * This check is redundant with the following __CPROVER_w_ok.
+     * __CPROVER_w_ok is a macro for __CPROVER_w_ok primitive, which
      * should return true if out is writable upt to out_size bytes;
-     * however, AWS_MEM_IS_WRITABLE has been replaced by a simple nullness check for now.
+     * however, __CPROVER_w_ok has been replaced by a simple nullness check for now.
      * Thus, we also include an additional check using __CPROVER_OBJECT_SIZE.
      */
     assert(__CPROVER_OBJECT_SIZE(out) >= out_size);
-    assert(AWS_MEM_IS_WRITABLE(out, out_size));
+    assert(__CPROVER_w_ok(out, out_size));
     *outl = out_size;
     return rv;
 }
@@ -626,7 +628,7 @@ int EVP_EncryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl) {
     assert(ctx != NULL);
     if (ctx->padding == true) {
         *outl = ctx->data_remaining;
-        assert(AWS_MEM_IS_WRITABLE(out, ctx->data_remaining));
+        assert(__CPROVER_w_ok(out, ctx->data_remaining));
     }
     ctx->data_processed = true;
     int rv;
@@ -644,7 +646,7 @@ int EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl) {
     assert(ctx != NULL);
     if (ctx->padding == true) {
         *outl = ctx->data_remaining;
-        assert(AWS_MEM_IS_WRITABLE(outm, ctx->data_remaining));
+        assert(__CPROVER_w_ok(outm, ctx->data_remaining));
     }
     ctx->data_processed = true;
     int rv;
@@ -657,16 +659,28 @@ int EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl) {
  * 256, 224, 256, 384 and 512 bits respectively of output from a given input. Return values: These functions return a
  * EVP_MD structure that contains the implementation of the symmetric cipher.
  */
+const EVP_MD *EVP_md5() {
+    static const EVP_MD md = { EVP_MD5, 0, 0, 16 /* Digest length. */, 0, 0, 16 };
+    return &md;
+}
+const EVP_MD *EVP_sha1() {
+    static const EVP_MD md = { EVP_SHA1, 0, 0, 20 /* Digest length. */, 0, 0, 20 };
+    return &md;
+}
+const EVP_MD *EVP_sha224() {
+    static const EVP_MD md = { EVP_SHA224, 0, 0, 28 /* Digest length. */, 0, 0, 28 };
+    return &md;
+}
 const EVP_MD *EVP_sha256() {
-    static const EVP_MD md = { EVP_SHA256, 32 };
+    static const EVP_MD md = { EVP_SHA256, 0, 0, 32 /* Digest length. */, 0, 0, 32 };
     return &md;
 }
 const EVP_MD *EVP_sha384() {
-    static const EVP_MD md = { EVP_SHA384, 48 };
+    static const EVP_MD md = { EVP_SHA384, 0, 0, 48 /* Digest length. */, 0, 0, 48 };
     return &md;
 }
 const EVP_MD *EVP_sha512() {
-    static const EVP_MD md = { EVP_SHA512, 64 };
+    static const EVP_MD md = { EVP_SHA512, 0, 0, 64 /* Digest length. */, 0, 0, 64 };
     return &md;
 }
 
@@ -674,25 +688,41 @@ const EVP_MD *EVP_sha512() {
  * the hash.
  */
 int EVP_MD_size(const EVP_MD *md) {
+    assert(md != NULL);
+    if (md->from == EVP_MD5) {
+        return 16;
+    }
+    if (md->from == EVP_SHA1) {
+        return 20;
+    }
+    if (md->from == EVP_SHA224) {
+        return 28;
+    }
     if (md->from == EVP_SHA256) {
-        return 256;
+        return 32;
     }
     if (md->from == EVP_SHA384) {
-        return 384;
+        return 48;
     }
-    return 512;
+    return 64;
+}
+
+/* Helper function for CBMC proofs: checks if EVP_MD_CTX is valid. */
+bool evp_md_ctx_is_valid(EVP_MD_CTX *ctx) {
+    return ctx && ctx->digest != NULL && ctx->digest->md_size <= EVP_MAX_MD_SIZE &&
+           (ctx->pctx == NULL || evp_pkey_ctx_is_valid(ctx->pctx));
 }
 
 /*
  * Description: Allocates and returns a digest context.
  */
 EVP_MD_CTX *EVP_MD_CTX_new() {
-    EVP_MD_CTX *ctx = malloc(sizeof(EVP_MD_CTX));
+    EVP_MD_CTX *ctx = malloc(sizeof(*ctx));
 
-    if (ctx) {
-        ctx->is_initialized = false;
-        ctx->pkey           = NULL;
-        ctx->digest_size    = 0;
+    if (ctx != NULL) {
+        ctx->digest  = NULL;
+        ctx->md_data = NULL;
+        ctx->pctx    = NULL;
     }
 
     return ctx;
@@ -703,18 +733,33 @@ EVP_MD_CTX *EVP_MD_CTX_new() {
  * the hash. Return values: Returns the digest or block size in bytes.
  */
 int EVP_MD_CTX_size(const EVP_MD_CTX *ctx) {
-    assert(evp_md_ctx_is_valid(ctx));
-    return ctx->digest_size;
+    assert(ctx != NULL);
+    return EVP_MD_size(ctx->digest);
 }
 
 /*
  * Description: Cleans up digest context ctx and frees up the space allocated to it.
  */
 void EVP_MD_CTX_free(EVP_MD_CTX *ctx) {
-    if (ctx) {
-        EVP_PKEY_free(ctx->pkey);
+    if (ctx != NULL) {
+        free(ctx->digest);
+        free(ctx->md_data);
+        EVP_PKEY_CTX_free(ctx->pctx);
         free(ctx);
     }
+}
+
+/*
+ * Description: This call frees resources associated with the context.
+ */
+int EVP_MD_CTX_cleanup(EVP_MD_CTX *ctx) {
+    if (nondet_bool()) return 0;
+    if (ctx != NULL) {
+        free(ctx->digest);
+        free(ctx->md_data);
+        EVP_PKEY_CTX_free(ctx->pctx);
+    }
+    return 1;
 }
 
 /*
@@ -723,17 +768,17 @@ void EVP_MD_CTX_free(EVP_MD_CTX *ctx) {
  * values: Returns 1 for success and 0 for failure.
  */
 int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl) {
-    assert(ctx);
-    assert(!ctx->is_initialized);
+    assert(ctx != NULL);  // ctx must be initialized before calling EVP_DigestInit_ex function.
     assert(evp_md_is_valid(type));
-    assert(!impl);  // Assuming that this function is always called in ESDK with impl == NULL
+    assert(impl == NULL);  // Assuming that this function is always called with impl == NULL
 
     if (nondet_bool()) return 0;
 
-    ctx->is_initialized = true;
-    ctx->digest_size    = type->size;
+    ctx->digest  = type;
+    ctx->md_data = malloc(type->md_size);
+    ctx->pctx    = NULL;
 
-    return ctx->is_initialized;
+    return 1;
 }
 
 /*
@@ -749,15 +794,14 @@ int EVP_DigestInit(EVP_MD_CTX *ctx, const EVP_MD *type) {
  * on the same ctx to hash additional data. Return values: Returns 1 for success and 0 for failure.
  */
 int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *d, size_t cnt) {
-    assert(evp_md_ctx_is_valid(ctx));
-    assert(d);
-    assert(AWS_MEM_IS_READABLE(d, cnt));
+    assert(ctx != NULL);
+    assert(ctx->digest != NULL);
+    assert(__CPROVER_r_ok(d, cnt));
 
+    __CPROVER_havoc_object(d);
     if (nondet_bool()) {
-        ctx->is_initialized = false;
         return 0;
     }
-
     return 1;
 }
 
@@ -769,13 +813,13 @@ int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *d, size_t cnt) {
  * Return values: Returns 1 for success and 0 for failure.
  */
 int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s) {
-    assert(evp_md_ctx_is_valid(ctx));
-    assert(md);
-    assert(AWS_MEM_IS_WRITABLE(md, ctx->digest_size));
+    assert(ctx != NULL);
+    assert(__CPROVER_w_ok(md, EVP_MD_CTX_size(ctx)));
     // s can be NULL
 
-    write_unconstrained_data(md, ctx->digest_size);
-    ctx->is_initialized = false;
+    __CPROVER_havoc_object(md);
+    if (s) *s = EVP_MD_CTX_size(ctx);
+    ctx->digest = NULL; /* No additional calls to EVP_DigestUpdate. */
 
     if (nondet_bool()) {
         // Something went wrong, can't guarantee *s will have the correct value
@@ -783,8 +827,6 @@ int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s) {
         if (s) *s = garbage;
         return 0;
     }
-
-    if (s) *s = ctx->digest_size;
 
     return 1;
 }
@@ -813,8 +855,7 @@ int EVP_DigestFinal(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s) {
  * failure.
  */
 int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx, const EVP_MD *type, ENGINE *e, EVP_PKEY *pkey) {
-    assert(ctx);
-    assert(!ctx->is_initialized);
+    assert(ctx != NULL);
     assert(!pctx);  // Assuming that this function is always called in ESDK with pctx == NULL
     assert(evp_md_is_valid(type));
     assert(!e);  // Assuming that this function is always called in ESDK with e == NULL
@@ -822,10 +863,10 @@ int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx, const EVP_MD *typ
 
     if (nondet_bool()) return 0;
 
-    ctx->is_initialized = true;
+    /*ctx->is_initialized = true;
     ctx->pkey           = pkey;
     pkey->references += 1;
-    ctx->digest_size = type->size;
+    ctx->digest_size = type->size;*/
 
     return 1;
 }
@@ -840,7 +881,7 @@ int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx, const EVP_MD *typ
 int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sig, size_t siglen) {
     assert(evp_md_ctx_is_valid(ctx));
     assert(sig);
-    assert(AWS_MEM_IS_READABLE(sig, siglen));
+    assert(__CPROVER_r_ok(sig, siglen));
 
     // Since this operation only performs verification, none of the arguments are modified
 
@@ -935,11 +976,11 @@ int HMAC_Final(HMAC_CTX *ctx, unsigned char *md, unsigned int *len) {
     assert(hmac_ctx_is_valid(ctx));
     assert(ctx->md != NULL);
     int md_size = EVP_MD_size(ctx->md);
-    AWS_MEM_IS_WRITABLE(md, md_size);
+    __CPROVER_w_ok(md, md_size);
     *len = md_size;
     int rv;
     __CPROVER_assume(rv == 1 || rv == 0);
-    __CPROVER_assume(AWS_MEM_IS_READABLE(md, md_size));
+    __CPROVER_assume(__CPROVER_r_ok(md, md_size));
     return rv;
 }
 
@@ -987,14 +1028,9 @@ bool evp_cipher_is_valid(EVP_CIPHER *cipher) {
 }
 
 bool evp_md_is_valid(EVP_MD *md) {
-    return md && ((md->from == EVP_SHA256 && md->size == 32) || (md->from == EVP_SHA384 && md->size == 48) ||
-                  (md->from == EVP_SHA512 && md->size == 64));
-}
-
-/* Helper function for CBMC proofs: checks if EVP_MD_CTX is valid. */
-bool evp_md_ctx_is_valid(EVP_MD_CTX *ctx) {
-    return ctx && ctx->is_initialized && ctx->digest_size <= EVP_MAX_MD_SIZE &&
-           (ctx->pkey == NULL || evp_pkey_is_valid(ctx->pkey));
+    return md && ((md->from == EVP_MD5 && md->md_size == 16) || (md->from == EVP_SHA1 && md->md_size == 20) ||
+                  (md->from == EVP_SHA224 && md->md_size == 28) || (md->from == EVP_SHA256 && md->md_size == 32) ||
+                  (md->from == EVP_SHA384 && md->md_size == 48) || (md->from == EVP_SHA512 && md->md_size == 64));
 }
 
 /* Helper function for CBMC proofs: allocates EVP_MD_CTX nondeterministically. */
@@ -1004,22 +1040,22 @@ EVP_MD_CTX *evp_md_ctx_nondet_alloc() {
 
 /* Helper function for CBMC proofs: checks if EVP_MD_CTX is initialized. */
 bool evp_md_ctx_is_initialized(EVP_MD_CTX *ctx) {
-    return ctx->is_initialized;
+    return (ctx->digest != NULL);
 }
 
 /* Helper function for CBMC proofs: returns digest size. */
 size_t evp_md_ctx_get_digest_size(EVP_MD_CTX *ctx) {
-    return ctx->digest_size;
+    return ctx->digest->ctx_size;
 }
 
 /* Helper function for CBMC proofs: get EVP_PKEY without incrementing the reference count. */
 EVP_PKEY *evp_md_ctx_get0_evp_pkey(EVP_MD_CTX *ctx) {
-    return ctx ? ctx->pkey : NULL;
+    return ctx ? ctx->pctx->pkey : NULL;
 }
 
 /* Helper function for CBMC proofs: set EVP_PKEY without incrementing the reference count. */
 void evp_md_ctx_set0_evp_pkey(EVP_MD_CTX *ctx, EVP_PKEY *pkey) {
-    if (ctx) ctx->pkey = pkey;
+    if (ctx) ctx->pctx->pkey = pkey;
 }
 
 /* Helper function for CBMC proofs: frees the memory of the ctx without freeing the EVP_PKEY. */
@@ -1031,4 +1067,15 @@ void evp_md_ctx_shallow_free(EVP_MD_CTX *ctx) {
 void EVP_MD_CTX_set_flags(EVP_MD_CTX *ctx, int flags) {
     assert(__CPROVER_w_ok(ctx, sizeof(*ctx)));
     ctx->flags |= flags;
+}
+
+int EVP_MD_CTX_test_flags(const EVP_MD_CTX *ctx, int flags) {
+    assert(__CPROVER_w_ok(ctx, sizeof(*ctx)));
+    return (ctx->flags & flags);
+}
+
+int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in) {
+    assert(out != NULL);
+    if (in == NULL) return 0;
+    return (int)nondet_bool();
 }

@@ -27,7 +27,7 @@
 #define EVP_MD_CTX_FLAG_NON_FIPS_ALLOW 0x0008 /* Allow use of non FIPS digest in FIPS mode. */
 
 enum evp_aes { EVP_AES_128_GCM, EVP_AES_192_GCM, EVP_AES_256_GCM };
-enum evp_sha { EVP_SHA256, EVP_SHA384, EVP_SHA512 };
+enum evp_sha { EVP_MD5, EVP_SHA1, EVP_SHA224, EVP_SHA256, EVP_SHA384, EVP_SHA512 };
 
 /* Abstraction of the EVP_PKEY struct. */
 struct evp_pkey_st {
@@ -65,16 +65,44 @@ struct evp_cipher_ctx_st {
 /* Abstraction of the EVP_MD struct. */
 struct evp_md_st {
     enum evp_sha from;
-    size_t size;
+
+    /* nid */
+    int type;
+
+    int pkey_type;
+    int md_size;
+    unsigned long flags;
+    int block_size;
+    /* How big does the ctx->md_data need to be. */
+    int ctx_size;
 };
 
 /* Abstraction of the EVP_MD_CTX struct. */
 struct evp_md_ctx_st {
-    bool is_initialized;
-    EVP_PKEY *pkey;
-    size_t digest_size;
+    const EVP_MD *digest;
+
     unsigned long flags;
-};
+    void *md_data;
+    /* Public key context for sign/verify. */
+    EVP_PKEY_CTX *pctx;
+} /* EVP_MD_CTX */;
+
+EVP_MD_CTX *EVP_MD_CTX_new(void);
+int EVP_MD_CTX_size(const EVP_MD_CTX *ctx);
+void EVP_MD_CTX_free(EVP_MD_CTX *ctx);
+int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl);
+int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *d, size_t cnt);
+int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s);
+int EVP_DigestFinal(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s);
+int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx, const EVP_MD *type, ENGINE *e, EVP_PKEY *pkey);
+int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sig, size_t siglen);
+void EVP_MD_CTX_set_flags(EVP_MD_CTX *ctx, int flags);
+int EVP_MD_CTX_test_flags(const EVP_MD_CTX *ctx, int flags);
+int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in);
+int EVP_MD_CTX_cleanup(EVP_MD_CTX *ctx);
+
+#define EVP_MD_CTX_create() EVP_MD_CTX_new()
+#define EVP_MD_CTX_destroy(ctx) EVP_MD_CTX_free((ctx))
 
 EVP_PKEY *EVP_PKEY_new(void);
 EC_KEY *EVP_PKEY_get0_EC_KEY(EVP_PKEY *pkey);
@@ -95,17 +123,6 @@ int EVP_PKEY_CTX_set_rsa_oaep_md(EVP_PKEY_CTX *ctx, const EVP_MD *md);
 int EVP_PKEY_CTX_set_rsa_mgf1_md(EVP_PKEY_CTX *ctx, const EVP_MD *md);
 int EVP_PKEY_encrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen, const unsigned char *in, size_t inlen);
 int EVP_PKEY_decrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen, const unsigned char *in, size_t inlen);
-void EVP_MD_CTX_set_flags(EVP_MD_CTX *ctx, int flags);
-
-EVP_MD_CTX *EVP_MD_CTX_new(void);
-int EVP_MD_CTX_size(const EVP_MD_CTX *ctx);
-void EVP_MD_CTX_free(EVP_MD_CTX *ctx);
-int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl);
-int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *d, size_t cnt);
-int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s);
-int EVP_DigestFinal(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s);
-int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx, const EVP_MD *type, ENGINE *e, EVP_PKEY *pkey);
-int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sig, size_t siglen);
 
 EVP_CIPHER_CTX *EVP_CIPHER_CTX_new(void);
 int EVP_CipherInit_ex(
@@ -127,12 +144,13 @@ int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl, const 
 int EVP_EncryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl);
 int EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
 
-#define EVP_MD_CTX_create() EVP_MD_CTX_new()
-#define EVP_MD_CTX_destroy(ctx) EVP_MD_CTX_free((ctx))
-
 const EVP_CIPHER *EVP_aes_128_gcm(void);
 const EVP_CIPHER *EVP_aes_192_gcm(void);
 const EVP_CIPHER *EVP_aes_256_gcm(void);
+
+const EVP_MD *EVP_md5(void);
+const EVP_MD *EVP_sha1(void);
+const EVP_MD *EVP_sha224(void);
 const EVP_MD *EVP_sha256(void);
 const EVP_MD *EVP_sha384(void);
 const EVP_MD *EVP_sha512(void);

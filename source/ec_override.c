@@ -13,22 +13,7 @@
  * permissions and limitations under the License.
  */
 
-#include <limits.h>
-
-#include <bn_utils.h>
 #include <ec_utils.h>
-#include <openssl/ec.h>
-#include <openssl/objects.h>
-
-#include <proof_helpers/nondet.h>
-#include <proof_helpers/proof_allocators.h>
-
-/* Abstraction of the EC_GROUP struct */
-struct ec_group_st {
-    int curve_name;
-    point_conversion_form_t asn1_form;
-    BIGNUM *order;
-};
 
 /*
  * Description: In order to construct a builtin curve use the function EC_GROUP_new_by_curve_name and provide the nid of
@@ -71,20 +56,11 @@ const BIGNUM *EC_GROUP_get0_order(const EC_GROUP *group) {
  * Description: EC_GROUP_free frees the memory associated with the EC_GROUP. If group is NULL nothing is done.
  */
 void EC_GROUP_free(EC_GROUP *group) {
-    if (group) {
+    if (group != NULL) {
         BN_free(group->order);
         free(group);
     }
 }
-
-/* Abstraction of the EC_KEY struct */
-struct ec_key_st {
-    int references;
-    EC_GROUP *group;
-    point_conversion_form_t conv_form;
-    BIGNUM *priv_key;
-    bool pub_key_is_set;  // We never have to return a public-key object, so just having this flag is enough
-};
 
 /*
  * Description: A new EC_KEY with no associated curve can be constructed by calling EC_KEY_new(). The reference count
@@ -208,7 +184,9 @@ int EC_KEY_up_ref(EC_KEY *key) {
  * zero then frees the memory associated with it. If key is NULL nothing is done.
  */
 void EC_KEY_free(EC_KEY *key) {
-    if (key) {
+    if (key != NULL &&
+        /* We must include this extra guard to avoid spurious arithmetic underflows. */
+        key->references > 0) {
         key->references -= 1;
         if (key->references == 0) {
             EC_GROUP_free(key->group);
@@ -355,9 +333,9 @@ ECDSA_SIG *d2i_ECDSA_SIG(ECDSA_SIG **sig, const unsigned char **pp, long len) {
  */
 int i2d_ECDSA_SIG(const ECDSA_SIG *sig, unsigned char **pp) {
     assert(ecdsa_sig_is_valid(sig));
-    assert(pp);
-    assert(*pp);                                             // Assuming is never called with *pp == NULL
-    assert(AWS_MEM_IS_WRITABLE(*pp, max_signature_size()));  // *pp has enough space for the signature
+    assert(pp != NULL);
+    assert(*pp != NULL);                                // Assuming is never called with *pp == NULL
+    assert(__CPROVER_w_ok(*pp, max_signature_size()));  // *pp has enough space for the signature
 
     // Documentation says 0 is returned on error, but OpenSSL implementation returns -1
     // To be safe, we return a number <= 0
@@ -484,7 +462,7 @@ size_t max_decryption_size() {
 
 /* Writes arbitrary data into the buffer out. */
 void write_unconstrained_data(unsigned char *out, size_t len) {
-    assert(AWS_MEM_IS_WRITABLE(out, len));
+    assert(__CPROVER_w_ok(out, len));
 
     // Currently we ignore the len parameter and just fill the entire buffer with unconstrained data.
     // This is fine because it is strictly more general behavior than writing only len bytes.
