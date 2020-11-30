@@ -763,6 +763,14 @@ int EVP_MD_CTX_cleanup(EVP_MD_CTX *ctx) {
 }
 
 /*
+ * Description: Returns the EVP_MD structure corresponding to the passed EVP_MD_CTX.
+ */
+const EVP_MD *EVP_MD_CTX_md(const EVP_MD_CTX *ctx) {
+    if (ctx == NULL) return NULL;
+    return ctx->digest;
+}
+
+/*
  * Description: Sets up digest context ctx to use a digest type from ENGINE impl. type will typically be supplied by
  * a function such as EVP_sha1(). If impl is NULL then the default implementation of digest type is used. Return
  * values: Returns 1 for success and 0 for failure.

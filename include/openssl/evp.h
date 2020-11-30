@@ -90,6 +90,7 @@ struct evp_md_ctx_st {
 EVP_MD_CTX *EVP_MD_CTX_new(void);
 int EVP_MD_CTX_size(const EVP_MD_CTX *ctx);
 void EVP_MD_CTX_free(EVP_MD_CTX *ctx);
+const EVP_MD *EVP_MD_CTX_md(const EVP_MD_CTX *ctx);
 int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl);
 int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *d, size_t cnt);
 int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s);
