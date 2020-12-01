@@ -154,35 +154,35 @@ int SHA512_Final(unsigned char *md, SHA512_CTX *c) {
 }
 
 int SHA1_Update(SHA_CTX *c, const void *data, size_t len) {
-    assert(__CPROVER_w_ok(data, len));
+    assert(len == 0 || __CPROVER_w_ok(data, len));
     assert(c != NULL);
     if (nondet_bool()) return 0;
     return 1;
 }
 
 int SHA224_Update(SHA256_CTX *c, const void *data, size_t len) {
-    assert(__CPROVER_w_ok(data, len));
+    assert(len == 0 || __CPROVER_w_ok(data, len));
     assert(c != NULL);
     if (nondet_bool()) return 0;
     return 1;
 }
 
 int SHA256_Update(SHA256_CTX *c, const void *data, size_t len) {
-    assert(__CPROVER_w_ok(data, len));
+    assert(len == 0 || __CPROVER_w_ok(data, len));
     assert(c != NULL);
     if (nondet_bool()) return 0;
     return 1;
 }
 
 int SHA384_Update(SHA512_CTX *c, const void *data, size_t len) {
-    assert(__CPROVER_w_ok(data, len));
+    assert(len == 0 || __CPROVER_w_ok(data, len));
     assert(c != NULL);
     if (nondet_bool()) return 0;
     return 1;
 }
 
 int SHA512_Update(SHA512_CTX *c, const void *data, size_t len) {
-    assert(__CPROVER_w_ok(data, len));
+    assert(len == 0 || __CPROVER_w_ok(data, len));
     assert(c != NULL);
     if (nondet_bool()) return 0;
     return 1;
