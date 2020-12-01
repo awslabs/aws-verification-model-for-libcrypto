@@ -70,6 +70,10 @@ DH *d2i_DHparams(DH **a, const unsigned char **pp, long length) {
 }
 
 int DH_check(DH *dh, int *codes) {
+    /**
+     * Only check for nullness at this point, since we need to re-evaluate all validty functions.
+     * See https://github.com/awslabs/aws-verification-model-for-libcrypto/issues/17.
+     * */
     assert(dh != NULL);
     assert(codes != NULL);
     *codes = nondet_int();
