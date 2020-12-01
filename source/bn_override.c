@@ -15,6 +15,8 @@
 
 #include <bn_utils.h>
 
+#include <math.h>
+
 /*
  * Description: BN_new() allocates and initializes a BIGNUM structure.
  * Return values: BN_new() and BN_secure_new() return a pointer to the
@@ -96,4 +98,26 @@ bool bignum_is_valid(BIGNUM *a) {
 
 BIGNUM *bignum_nondet_alloc() {
     return malloc(sizeof(BIGNUM));
+}
+
+BIGNUM *BN_bin2bn(const unsigned char *s, int len, BIGNUM *ret) {
+    assert(len == 0 || __CPROVER_r_ok(s, len));
+    if (ret == NULL) {
+        ret = BN_new();
+    }
+    return ret;
+}
+
+int BN_num_bits(const BIGNUM *a) {
+    assert(a != NULL);
+    unsigned int w;
+    /* Basically, except for a zero, it returns floor(log2(w))+1. */
+    __CPROVER_assume(w <= 65 /* floor(log2(SIZE_MAX))+1 */);
+    return w;
+}
+
+int BN_bn2bin(const BIGNUM *a, unsigned char *to) {
+    assert(a != NULL);
+    assert(to != NULL);
+    return nondet_int();
 }

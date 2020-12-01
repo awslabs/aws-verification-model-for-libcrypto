@@ -25,6 +25,8 @@
 #    define HEADER_BN_H
 #    pragma once
 
+#    define BN_num_bytes(a) ((BN_num_bits(a) + 7) / 8)
+
 /* Abstraction of the BIGNUM struct. */
 struct bignum_st {
     bool is_initialized;
@@ -42,6 +44,9 @@ BIGNUM *BN_dup(const BIGNUM *from);
 int BN_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 void BN_clear_free(BIGNUM *a);
 void BN_free(BIGNUM *a);
+BIGNUM *BN_bin2bn(const unsigned char *s, int len, BIGNUM *ret);
+int BN_bn2bin(const BIGNUM *a, unsigned char *to);
+int BN_num_bits(const BIGNUM *a);
 
 int BN_is_zero(BIGNUM *a);
 
