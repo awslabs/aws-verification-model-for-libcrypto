@@ -46,7 +46,7 @@ int MD5_Final(unsigned char *md, MD5_CTX *c) {
 }
 
 int MD5_Update(MD5_CTX *c, const void *data, size_t len) {
-    assert(__CPROVER_w_ok(data, len));
+    assert(len == 0 || __CPROVER_w_ok(data, len));
     assert(c != NULL);
     if (nondet_bool()) return 0;
     return 1;
