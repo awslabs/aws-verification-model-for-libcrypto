@@ -22,6 +22,18 @@ bool openssl_DH_is_valid(const DH *dh) {
     return __CPROVER_w_ok(dh, sizeof(*dh));
 }
 
+DH *DH_new(void) {
+    DH *dh = malloc(sizeof(*dh));
+    if (dh != NULL) {
+        dh->pub_key  = BN_new();
+        dh->priv_key = BN_new();
+        dh->p        = BN_new();
+        dh->q        = BN_new();
+        dh->g        = BN_new();
+    }
+    return dh;
+}
+
 int DH_size(const DH *dh) {
     /**
      * Both dh and dh->p must not be NULL.
@@ -29,7 +41,9 @@ int DH_size(const DH *dh) {
      */
     assert(openssl_DH_is_valid(dh));
     assert(dh->p != NULL);
-    return nondet_int();
+    int size;
+    __CPROVER_assume(0 < size);
+    return size;
 }
 
 void DH_free(DH *dh) {
@@ -56,7 +70,7 @@ DH *d2i_DHparams(DH **a, const unsigned char **pp, long length) {
 }
 
 int DH_check(DH *dh, int *codes) {
-    assert(openssl_DH_is_valid(dh));
+    assert(dh != NULL);
     assert(codes != NULL);
     *codes = nondet_int();
     return (int)nondet_bool();
@@ -91,4 +105,57 @@ void DH_get0_pqg(const DH *dh, BIGNUM **p, const BIGNUM **q, const BIGNUM **g) {
             *g = NULL;
         }
     }
+}
+
+int DH_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh) {
+    assert(pub_key != NULL);
+    assert(dh != NULL);
+    return nondet_bool() ? DH_size(dh) : -1;
+}
+
+int DH_generate_key(DH *dh) {
+    /**
+     * DH_generate_key() expects dh to contain the shared parameters dh->p and dh->g.
+     * Per https://www.openssl.org/docs/man1.1.0/man3/DH_generate_key.html.
+     */
+    assert(dh != NULL);
+    assert(dh->p != NULL);
+    assert(dh->g != NULL);
+    return (int)nondet_bool();
+}
+
+DH *DHparams_dup(const DH *dh) {
+    DH *ret;
+    ret = DH_new();
+    if (ret == NULL) return NULL;
+    ret->pad     = dh->pad;
+    ret->version = dh->version;
+    ret->params  = dh->params;
+    ret->length  = dh->length;
+    ret->flags   = dh->flags;
+    if (dh->pub_key != NULL) {
+        __CPROVER_assume(ret->pub_key != NULL);
+        *ret->pub_key = *dh->pub_key;
+    } else {
+        ret->pub_key = NULL;
+    }
+    if (dh->priv_key != NULL) {
+        __CPROVER_assume(ret->priv_key != NULL);
+        *ret->priv_key = *dh->priv_key;
+    } else {
+        ret->priv_key = NULL;
+    }
+    if (dh->p != NULL) {
+        __CPROVER_assume(ret->p != NULL);
+        *ret->p = *dh->p;
+    } else {
+        ret->p = NULL;
+    }
+    if (dh->g != NULL) {
+        __CPROVER_assume(ret->g != NULL);
+        *ret->g = *dh->g;
+    } else {
+        ret->g = NULL;
+    }
+    return ret;
 }
