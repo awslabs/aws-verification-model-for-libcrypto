@@ -18,32 +18,12 @@
 #ifndef HEADER_MD5_H
 #define HEADER_MD5_H
 
-/*
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * ! MD5_LONG has to be at least 32 bits wide. If it's wider, then !
- * ! MD5_LONG_LOG2 has to be defined along.			   !
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- */
-
-#if defined(__LP32__)
-#    define MD5_LONG unsigned long
-#elif defined(OPENSSL_SYS_CRAY) || defined(__ILP64__)
-#    define MD5_LONG unsigned long
-#    define MD5_LONG_LOG2 3
-/*
- * _CRAY note. I could declare short, but I have no idea what impact
- * does it have on performance on none-T3E machines. I could declare
- * int, but at least on C90 sizeof(int) can be chosen at compile time.
- * So I've chosen long...
- *					<appro@fy.chalmers.se>
- */
-#else
-#    define MD5_LONG unsigned int
-#endif
-
+#define MD5_LONG unsigned int
 #define MD5_CBLOCK 64
 #define MD5_LBLOCK (MD5_CBLOCK / 4)
 #define MD5_DIGEST_LENGTH 16
+
+#include <stdlib.h>
 
 typedef struct MD5state_st {
     /* Internal buffers used during the computation. */
