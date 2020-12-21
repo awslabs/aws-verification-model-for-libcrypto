@@ -825,8 +825,7 @@ int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *s) {
     assert(__CPROVER_w_ok(md, EVP_MD_CTX_size(ctx)));
     // s can be NULL
 
-    unsigned char havoc_md;
-    *md = havoc_md;
+    *md = nondet_unsigned_char();
 
     if (s) *s = EVP_MD_CTX_size(ctx);
     ctx->digest = NULL; /* No additional calls to EVP_DigestUpdate. */
