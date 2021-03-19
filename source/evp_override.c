@@ -989,7 +989,11 @@ int HMAC_Final(HMAC_CTX *ctx, unsigned char *md, unsigned int *len) {
     *len = md_size;
     int rv;
     __CPROVER_assume(rv == 1 || rv == 0);
-    __CPROVER_assume(__CPROVER_r_ok(md, md_size));
+    /*
+     * Using __CPROVER_r_ok(md, md_size)  would make this assumption stronger,
+     * but the use of these primitives in assumptions may lead to spurious results.
+     */
+    __CPROVER_assume(md != NULL);
     return rv;
 }
 
