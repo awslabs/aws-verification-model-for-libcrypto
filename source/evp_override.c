@@ -387,12 +387,16 @@ int EVP_PKEY_decrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen, cons
 }
 
 /*
- *EVP_PKEY_CTX_free() frees up the context ctx. If ctx is NULL, nothing is done.
+ * EVP_PKEY_CTX_free() frees up the context ctx. If ctx is NULL, nothing is done.
+ *
+ * Reference Implementation:
+ * https://github.com/openssl/openssl/blob/6c9bc258d2e9e7b500236a1c696da1f384f0b907/crypto/evp/pmeth_lib.c#L393
  */
 void EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx) {
-    if (ctx) {
-        free(ctx);
-    }
+    if (!ctx) return;
+
+    EVP_PKEY_free(ctx->pkey);
+    free(ctx);
 }
 
 /*
