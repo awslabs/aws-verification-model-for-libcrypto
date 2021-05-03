@@ -83,7 +83,7 @@ void BN_free(BIGNUM *a) {
  */
 void BN_clear_free(BIGNUM *a) {
     /* No way currently to model or check that the data is cleared. */
-    free(a);
+    BN_free(a);
 }
 
 int BN_is_zero(BIGNUM *a) {

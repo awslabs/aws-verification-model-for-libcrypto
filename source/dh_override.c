@@ -48,7 +48,14 @@ int DH_size(const DH *dh) {
 
 void DH_free(DH *dh) {
     assert(dh == NULL || openssl_DH_is_valid(dh));
-    if (dh != NULL) free(dh);
+    if (dh != NULL) {
+        BN_free(dh->pub_key);
+        BN_free(dh->priv_key);
+        BN_free(dh->p);
+        BN_free(dh->q);
+        BN_free(dh->g);
+        free(dh);
+    }
     return;
 }
 
