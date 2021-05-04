@@ -64,10 +64,11 @@ DH *d2i_DHparams(DH **a, const unsigned char **pp, long length) {
     assert(pp != NULL);
     DH *dummy_dh = malloc(sizeof(*dummy_dh));
     if (dummy_dh != NULL) {
-        dummy_dh->pub_key  = malloc(sizeof(*(dummy_dh->pub_key)));
-        dummy_dh->priv_key = malloc(sizeof(*(dummy_dh->priv_key)));
-        dummy_dh->p        = malloc(sizeof(*(dummy_dh->p)));
-        dummy_dh->g        = malloc(sizeof(*(dummy_dh->g)));
+        dummy_dh->pub_key  = BN_new();
+        dummy_dh->priv_key = BN_new();
+        dummy_dh->p        = BN_new();
+        dummy_dh->g        = BN_new();
+        dummy_dh->q        = BN_new();
         if (a != NULL) *a = dummy_dh;
     }
     if (nondet_bool() && *pp != NULL) {
