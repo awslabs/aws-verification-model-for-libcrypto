@@ -14,6 +14,10 @@
  * permissions and limitations under the License.
  */
 
+#ifndef OSSL_INTERNAL_RSA_H
+#define OSSL_INTERNAL_RSA_H
+#pragma once
+
 #define RSA_PKCS1_PADDING 1
 #define RSA_SSLV23_PADDING 2
 #define RSA_NO_PADDING 3
@@ -21,3 +25,9 @@
 #define RSA_X931_PADDING 5
 /* EVP_PKEY_ only */
 #define RSA_PKCS1_PSS_PADDING 6
+
+typedef struct rsa_st {
+    /* See https://github.com/openssl/openssl/blob/master/include/openssl/rsa.h */
+} RSA;
+
+#endif
