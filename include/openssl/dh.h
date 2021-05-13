@@ -19,10 +19,6 @@
 #include <openssl/bn.h>
 #include <openssl/ffc.h>
 
-#include "api/s2n.h"
-#include "stuffer/s2n_stuffer.h"
-#include "utils/s2n_safety.h"
-
 #ifndef OPENSSL_DH_H
 #    define OPENSSL_DH_H
 #    pragma once
