@@ -29,6 +29,12 @@
 enum evp_aes { EVP_AES_128_GCM, EVP_AES_192_GCM, EVP_AES_256_GCM };
 enum evp_sha { EVP_MD5, EVP_SHA1, EVP_SHA224, EVP_SHA256, EVP_SHA384, EVP_SHA512 };
 
+// An EVP_AEAD_CTX represents an AEAD algorithm configured with a specific key
+// and message-independent IV.
+typedef struct evp_aead_ctx_st {
+    /* See https://github.com/google/boringssl/blob/master/include/openssl/aead.h#L217 */
+} EVP_AEAD_CTX;
+
 /* Abstraction of the EVP_PKEY struct. */
 struct evp_pkey_st {
     int references;
