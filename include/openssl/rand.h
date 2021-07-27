@@ -20,14 +20,13 @@
 /* Already defined in ossl_typ.h */
 /* typedef struct rand_meth_st RAND_METHOD; */
 
-struct rand_meth_st
-    {
+struct rand_meth_st {
     void (*seed)(const void *buf, int num);
     int (*bytes)(unsigned char *buf, int num);
     void (*cleanup)(void);
     void (*add)(const void *buf, int num, double entropy);
     int (*pseudorand)(unsigned char *buf, int num);
     int (*status)(void);
-    };
+};
 
 #endif
