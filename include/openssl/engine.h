@@ -21,7 +21,7 @@
  * by bitwise "OR"ing. */
 #define ENGINE_METHOD_RAND (unsigned int)0x0008
 
-/* This flag if for an ENGINE that does not want its methods registered as 
+/* This flag if for an ENGINE that does not want its methods registered as
  * part of ENGINE_register_all_complete() for example if the methods are
  * not usable as default methods. */
 #define ENGINE_FLAGS_NO_REGISTER_ALL (int)0x0008
