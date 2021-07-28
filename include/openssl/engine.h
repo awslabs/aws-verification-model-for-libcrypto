@@ -14,19 +14,16 @@
  * permissions and limitations under the License.
  */
 
-#ifndef HEADER_RAND_H
-#define HEADER_RAND_H
+#ifndef HEADER_ENGINE_H
+#define HEADER_ENGINE_H
 
-/* Already defined in ossl_typ.h */
-/* typedef struct rand_meth_st RAND_METHOD; */
+/* These flags are used to control combinations of algorithm (methods)
+ * by bitwise "OR"ing. */
+#define ENGINE_METHOD_RAND (unsigned int)0x0008
 
-struct rand_meth_st {
-    void (*seed)(const void *buf, int num);
-    int (*bytes)(unsigned char *buf, int num);
-    void (*cleanup)(void);
-    void (*add)(const void *buf, int num, double entropy);
-    int (*pseudorand)(unsigned char *buf, int num);
-    int (*status)(void);
-};
+/* This flag if for an ENGINE that does not want its methods registered as
+ * part of ENGINE_register_all_complete() for example if the methods are
+ * not usable as default methods. */
+#define ENGINE_FLAGS_NO_REGISTER_ALL (int)0x0008
 
 #endif
