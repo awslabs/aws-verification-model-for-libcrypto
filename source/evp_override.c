@@ -810,7 +810,7 @@ int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *d, size_t cnt) {
     assert(ctx->digest != NULL);
     assert(cnt == 0 || __CPROVER_r_ok(d, cnt));
 
-    __CPROVER_havoc_object(d);
+    __CPROVER_havoc_object(ctx->digest);
     if (nondet_bool()) {
         return 0;
     }
