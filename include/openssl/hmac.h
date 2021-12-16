@@ -17,6 +17,10 @@
 #ifndef HEADER_HMAC_H
 #define HEADER_HMAC_H
 
+#include "ossl_typ.h"
+
+#include <stdbool.h>
+
 struct hmac_ctx_st {
     const EVP_MD *md;
     EVP_MD_CTX *md_ctx;
