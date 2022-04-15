@@ -151,6 +151,8 @@ int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl, const 
 int EVP_EncryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl);
 int EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
 
+int EVP_Cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, unsigned int inl);
+
 const EVP_CIPHER *EVP_aes_128_gcm(void);
 const EVP_CIPHER *EVP_aes_192_gcm(void);
 const EVP_CIPHER *EVP_aes_256_gcm(void);
@@ -202,5 +204,9 @@ int EVP_MD_size(const EVP_MD *md);
 #define EVP_PKEY_OP_DERIVE (1 << 10)
 
 #define EVP_PKEY_ALG_CTRL 0x1000
+
+#define EVP_CTRL_AEAD_TLS1_AAD 0x16
+#define EVP_CTRL_AEAD_SET_MAC_KEY 0x17
+#define EVP_CIPH_NO_PADDING 0x100
 
 #endif
