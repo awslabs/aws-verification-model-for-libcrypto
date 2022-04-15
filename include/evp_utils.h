@@ -9,6 +9,13 @@
 #include <ec_utils.h>
 #include <openssl/evp.h>
 
+#define IMPLIES(a, b) (!(a) || (b))
+/**
+ * If and only if (iff) is a biconditional logical connective between statements a and b.
+ * Equivalent to (IMPLIES(a, b) && IMPLIES(b, a)).
+ */
+#define IFF(a, b) (!!(a) == !!(b))
+
 size_t evp_md_ctx_get_digest_size(EVP_MD_CTX *ctx);
 
 EVP_PKEY *evp_md_ctx_get0_evp_pkey(EVP_MD_CTX *ctx);
