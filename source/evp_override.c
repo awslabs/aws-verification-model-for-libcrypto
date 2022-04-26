@@ -19,7 +19,8 @@
 #include <openssl/kdf.h>
 #include <openssl/rsa.h>
 
-#define DEFAULT_IV_LEN 12       // For GCM AES and OCB AES the default is 12 (i.e. 96 bits).
+#define DEFAULT_IV_LEN 12  // For GCM AES and OCB AES the default is 12 (i.e. 96 bits).
+#define DEFAULT_KEY_LEN 32
 #define DEFAULT_BLOCK_SIZE 128  // For GCM AES, the default block size is 128
 
 /*
@@ -416,6 +417,17 @@ const EVP_CIPHER *EVP_aes_256_gcm(void) {
     static const EVP_CIPHER cipher = { EVP_AES_256_GCM, 128 };
     return &cipher;
 }
+const EVP_CIPHER *EVP_aes_128_ecb(void) {
+    static const EVP_CIPHER cipher = { EVP_AES_128_ECB, 128 };
+    return &cipher;
+}
+
+/* From MAN pages: EVP_CIPHER_CTX_init() initializes cipher contex
+ * ctx. */
+/* It's not entirely clear what this function is intended to do. */
+void EVP_CIPHER_CTX_init(EVP_CIPHER_CTX *ctx) {
+    return;
+}
 
 /*
  * EVP_CIPHER_CTX_new() creates a cipher context.
@@ -425,6 +437,7 @@ EVP_CIPHER_CTX *EVP_CIPHER_CTX_new() {
     if (cipher_ctx) {
         cipher_ctx->iv_len         = DEFAULT_IV_LEN;
         cipher_ctx->iv_set         = false;
+        cipher_ctx->key_len        = DEFAULT_KEY_LEN;
         cipher_ctx->padding        = true;
         cipher_ctx->data_processed = false;
         cipher_ctx->data_remaining = 0;
@@ -511,7 +524,6 @@ void EVP_CIPHER_CTX_free(EVP_CIPHER_CTX *ctx) {
 int EVP_EncryptInit_ex(
     EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, ENGINE *impl, const unsigned char *key, const unsigned char *iv) {
     assert(ctx != NULL);
-    assert(type != NULL);
     ctx->encrypt = 1;
     int rv;
     __CPROVER_assume(rv == 0 || rv == 1);
@@ -1040,8 +1052,9 @@ bool evp_pkey_ctx_is_valid(EVP_PKEY_CTX *ctx) {
 }
 
 bool evp_cipher_is_valid(EVP_CIPHER *cipher) {
-    return cipher &&
-           (cipher->from == EVP_AES_128_GCM || cipher->from == EVP_AES_192_GCM || cipher->from == EVP_AES_256_GCM);
+    return cipher && (cipher->from == EVP_AES_128_GCM || cipher->from == EVP_AES_192_GCM ||
+                      cipher->from == EVP_AES_256_GCM || cipher->from == EVP_AES_128_ECB)
+        :
 }
 
 bool evp_md_is_valid(EVP_MD *md) {

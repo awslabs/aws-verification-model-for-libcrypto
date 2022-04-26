@@ -26,7 +26,7 @@
 #define EVP_PKEY_HKDF 1036                    /* Reference from obj_mac.h. */
 #define EVP_MD_CTX_FLAG_NON_FIPS_ALLOW 0x0008 /* Allow use of non FIPS digest in FIPS mode. */
 
-enum evp_aes { EVP_AES_128_GCM, EVP_AES_192_GCM, EVP_AES_256_GCM };
+enum evp_aes { EVP_AES_128_GCM, EVP_AES_192_GCM, EVP_AES_256_GCM, EVP_AES_128_ECB };
 enum evp_sha { EVP_MD5, EVP_SHA1, EVP_SHA224, EVP_SHA256, EVP_SHA384, EVP_SHA512 };
 
 // An EVP_AEAD_CTX represents an AEAD algorithm configured with a specific key
@@ -63,6 +63,7 @@ struct evp_cipher_ctx_st {
     int encrypt;
     int iv_len;           // default: DEFAULT_IV_LEN.
     bool iv_set;          // boolean marks if iv has been set. Default:false.
+    int key_len;          // default: DEFAULT_KEY_LEN
     bool padding;         // boolean marks if padding is enabled. Default:true.
     bool data_processed;  // boolean marks if has encrypt/decrypt final has been called. Default:false.
     int data_remaining;   // how much is left to be encrypted/decrypted. Default: 0.
@@ -131,6 +132,9 @@ int EVP_PKEY_CTX_set_rsa_mgf1_md(EVP_PKEY_CTX *ctx, const EVP_MD *md);
 int EVP_PKEY_encrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen, const unsigned char *in, size_t inlen);
 int EVP_PKEY_decrypt(EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen, const unsigned char *in, size_t inlen);
 
+#define EVP_CIPHER_CTX_key_length(ctx) ((ctx)->key_len)
+
+void EVP_CIPHER_CTX_init(EVP_CIPHER_CTX *ctx);
 EVP_CIPHER_CTX *EVP_CIPHER_CTX_new(void);
 int EVP_CipherInit_ex(
     EVP_CIPHER_CTX *ctx,
@@ -156,6 +160,7 @@ int EVP_Cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in,
 const EVP_CIPHER *EVP_aes_128_gcm(void);
 const EVP_CIPHER *EVP_aes_192_gcm(void);
 const EVP_CIPHER *EVP_aes_256_gcm(void);
+const EVP_CIPHER *EVP_aes_128_ecb(void);
 
 const EVP_MD *EVP_md5(void);
 const EVP_MD *EVP_sha1(void);
