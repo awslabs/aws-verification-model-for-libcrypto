@@ -19,7 +19,7 @@
 #include <openssl/kdf.h>
 #include <openssl/rsa.h>
 
-#define DEFAULT_IV_LEN 12       // For GCM AES and OCB AES the default is 12 (i.e. 96 bits).
+#define DEFAULT_IV_LEN 12  // For GCM AES and OCB AES the default is 12 (i.e. 96 bits).
 #define DEFAULT_KEY_LEN 32
 #define DEFAULT_BLOCK_SIZE 128  // For GCM AES, the default block size is 128
 
