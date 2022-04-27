@@ -1053,8 +1053,7 @@ bool evp_pkey_ctx_is_valid(EVP_PKEY_CTX *ctx) {
 
 bool evp_cipher_is_valid(EVP_CIPHER *cipher) {
     return cipher && (cipher->from == EVP_AES_128_GCM || cipher->from == EVP_AES_192_GCM ||
-                      cipher->from == EVP_AES_256_GCM || cipher->from == EVP_AES_128_ECB)
-        :
+                      cipher->from == EVP_AES_256_GCM || cipher->from == EVP_AES_128_ECB);
 }
 
 bool evp_md_is_valid(EVP_MD *md) {
