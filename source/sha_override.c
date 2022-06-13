@@ -112,7 +112,7 @@ int SHA1_Final(unsigned char *md, SHA_CTX *c) {
     assert(__CPROVER_w_ok(md, SHA_DIGEST_LENGTH));
     assert(c != NULL);
     if (nondet_bool()) return 0;
-    __CPROVER_havoc_object(md);
+    __CPROVER_havoc_slice(md, SHA_DIGEST_LENGTH);
     *c = (const SHA_CTX){ 0 };
     return 1;
 }
@@ -121,7 +121,7 @@ int SHA224_Final(unsigned char *md, SHA256_CTX *c) {
     assert(__CPROVER_w_ok(md, SHA224_DIGEST_LENGTH));
     assert(c != NULL);
     if (nondet_bool()) return 0;
-    __CPROVER_havoc_object(md);
+    __CPROVER_havoc_slice(md, SHA224_DIGEST_LENGTH);
     *c = (const SHA256_CTX){ 0 };
     return 1;
 }
@@ -130,7 +130,7 @@ int SHA256_Final(unsigned char *md, SHA256_CTX *c) {
     assert(__CPROVER_w_ok(md, SHA256_DIGEST_LENGTH));
     assert(c != NULL);
     if (nondet_bool()) return 0;
-    __CPROVER_havoc_object(md);
+    __CPROVER_havoc_slice(md, SHA256_DIGEST_LENGTH);
     *c = (const SHA256_CTX){ 0 };
     return 1;
 }
@@ -139,7 +139,7 @@ int SHA384_Final(unsigned char *md, SHA512_CTX *c) {
     assert(__CPROVER_w_ok(md, SHA384_DIGEST_LENGTH));
     assert(c != NULL);
     if (nondet_bool()) return 0;
-    __CPROVER_havoc_object(md);
+    __CPROVER_havoc_slice(md, SHA384_DIGEST_LENGTH);
     *c = (const SHA512_CTX){ 0 };
     return 1;
 }
@@ -148,7 +148,7 @@ int SHA512_Final(unsigned char *md, SHA512_CTX *c) {
     assert(__CPROVER_w_ok(md, SHA512_DIGEST_LENGTH));
     assert(c != NULL);
     if (nondet_bool()) return 0;
-    __CPROVER_havoc_object(md);
+    __CPROVER_havoc_slice(md, SHA512_DIGEST_LENGTH);
     *c = (const SHA512_CTX){ 0 };
     return 1;
 }
