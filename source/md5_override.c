@@ -40,7 +40,7 @@ int MD5_Final(unsigned char *md, MD5_CTX *c) {
     assert(__CPROVER_w_ok(md, MD5_DIGEST_LENGTH));
     assert(c != NULL);
     if (nondet_bool()) return 0;
-    __CPROVER_havoc_object(md);
+    __CPROVER_havoc_slice(md, MD5_DIGEST_LENGTH);
     *c = (const MD5_CTX){ 0 };
     return 1;
 }
