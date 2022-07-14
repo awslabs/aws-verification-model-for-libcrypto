@@ -22,7 +22,7 @@
  * RAND_bytes() returns 1 on success, 0 otherwise.
  */
 int RAND_bytes(unsigned char *buf, size_t num) {
-    assert(AWS_MEM_IS_WRITABLE(buf, num));
+    assert(__CPROVER_w_ok(buf, num));
     int rv;
     __CPROVER_assume(rv == 0 || rv == 1);
     return rv;

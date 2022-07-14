@@ -207,7 +207,7 @@ void EC_KEY_free(EC_KEY *key) {
 EC_KEY *o2i_ECPublicKey(EC_KEY **key, const unsigned char **in, long len) {
     assert(in);
     assert(*in);
-    assert(AWS_MEM_IS_READABLE(*in, len));
+    assert(__CPROVER_r_ok(*in, len));
 
     if (!key || !(*key) || !(*key)->group || nondet_bool()) {
         return NULL;
@@ -313,7 +313,7 @@ ECDSA_SIG *d2i_ECDSA_SIG(ECDSA_SIG **sig, const unsigned char **pp, long len) {
     assert(pp);
     assert(*pp);
     assert(0 <= len);
-    assert(AWS_MEM_IS_READABLE(*pp, len));
+    assert(__CPROVER_r_ok(*pp, len));
 
     *sig = malloc(sizeof(ECDSA_SIG));
 

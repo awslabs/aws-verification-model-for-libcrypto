@@ -81,7 +81,7 @@ ASN1_INTEGER *d2i_ASN1_INTEGER(ASN1_INTEGER **a, unsigned char **ppin, long leng
     assert(*a == NULL);  // Assuming *a is always initialized with NULL, therefore no reuse occurs
     assert(ppin);
     assert(*ppin);
-    assert(AWS_MEM_IS_READABLE(*ppin, length));
+    assert(__CPROVER_r_ok(*ppin, length));
 
     *a = malloc(sizeof(ASN1_INTEGER));
 
