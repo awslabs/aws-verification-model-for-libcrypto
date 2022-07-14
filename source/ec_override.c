@@ -15,6 +15,8 @@
 
 #include <ec_utils.h>
 
+#include <assert.h>
+
 /*
  * Description: In order to construct a builtin curve use the function EC_GROUP_new_by_curve_name and provide the nid of
  * the curve to be constructed. Return values: All EC_GROUP_new* functions return a pointer to the newly constructed

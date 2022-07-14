@@ -15,6 +15,7 @@
 
 #include <bn_utils.h>
 
+#include <assert.h>
 #include <math.h>
 
 /*

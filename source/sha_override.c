@@ -16,6 +16,8 @@
 #include <ec_utils.h>
 #include <openssl/sha.h>
 
+#include <assert.h>
+
 /*
  * All macros extracted from the original openssl implementation.
  * Per https://github.com/openssl/openssl/blob/e39e295e205ab8461d3ac814129bbb08c2d1266d/crypto/sha/sha_local.h.
