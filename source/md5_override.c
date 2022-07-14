@@ -16,6 +16,8 @@
 #include <ec_utils.h>
 #include <openssl/md5.h>
 
+#include <assert.h>
+
 /*
  * Implemented from RFC1321 The MD5 Message-Digest Algorithm.
  * Per https://github.com/openssl/openssl/blob/33388b44b67145af2181b1e9528c381c8ea0d1b6/crypto/md5/md5_dgst.c.

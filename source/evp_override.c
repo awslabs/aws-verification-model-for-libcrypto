@@ -19,6 +19,8 @@
 #include <openssl/kdf.h>
 #include <openssl/rsa.h>
 
+#include <assert.h>
+
 #define DEFAULT_IV_LEN 12  // For GCM AES and OCB AES the default is 12 (i.e. 96 bits).
 #define DEFAULT_KEY_LEN 32
 #define DEFAULT_BLOCK_SIZE 128  // For GCM AES, the default block size is 128
@@ -163,6 +165,8 @@ int EVP_PKEY_sign_init(EVP_PKEY_CTX *ctx) {
     __CPROVER_assume(rv <= 0);
     return rv;
 }
+
+bool evp_pkey_ctx_is_valid(EVP_PKEY_CTX *);
 
 /*
  * Description: The EVP_PKEY_sign() function performs a public key signing operation using ctx. The data to be signed is
@@ -786,6 +790,8 @@ const EVP_MD *EVP_MD_CTX_md(const EVP_MD_CTX *ctx) {
     return ctx->digest;
 }
 
+bool evp_md_is_valid(EVP_MD *md);
+
 /*
  * Description: Sets up digest context ctx to use a digest type from ENGINE impl. type will typically be supplied by
  * a function such as EVP_sha1(). If impl is NULL then the default implementation of digest type is used. Return
@@ -956,6 +962,8 @@ unsigned char *HMAC(
     write_unconstrained_data(res, amount_of_data_written);
     return res;
 }
+
+bool hmac_ctx_is_valid(HMAC_CTX *ctx);
 
 /*
 * HMAC_Init_ex() initializes or reuses a HMAC_CTX structure to use the hash function evp_md and key key.

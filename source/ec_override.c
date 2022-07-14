@@ -15,6 +15,8 @@
 
 #include <ec_utils.h>
 
+#include <assert.h>
+
 /*
  * Description: In order to construct a builtin curve use the function EC_GROUP_new_by_curve_name and provide the nid of
  * the curve to be constructed. Return values: All EC_GROUP_new* functions return a pointer to the newly constructed
@@ -43,6 +45,8 @@ void EC_GROUP_set_point_conversion_form(EC_GROUP *group, point_conversion_form_t
     assert(group);
     group->asn1_form = form;
 }
+
+bool ec_group_is_valid(EC_GROUP *group);
 
 /*
  * Return values: EC_GROUP_get0_order() returns an internal pointer to the group order.
@@ -207,7 +211,7 @@ void EC_KEY_free(EC_KEY *key) {
 EC_KEY *o2i_ECPublicKey(EC_KEY **key, const unsigned char **in, long len) {
     assert(in);
     assert(*in);
-    assert(AWS_MEM_IS_READABLE(*in, len));
+    assert(__CPROVER_r_ok(*in, len));
 
     if (!key || !(*key) || !(*key)->group || nondet_bool()) {
         return NULL;
@@ -261,6 +265,8 @@ struct ECDSA_SIG_st {
     BIGNUM *s;
 };
 
+bool ecdsa_sig_is_valid(ECDSA_SIG *sig);
+
 /*
  * Description: ECDSA_SIG_get0() returns internal pointers the r and s values contained in sig and stores them in *pr
  * and *ps, respectively. The pointer pr or ps can be NULL, in which case the corresponding value is not returned.
@@ -313,7 +319,7 @@ ECDSA_SIG *d2i_ECDSA_SIG(ECDSA_SIG **sig, const unsigned char **pp, long len) {
     assert(pp);
     assert(*pp);
     assert(0 <= len);
-    assert(AWS_MEM_IS_READABLE(*pp, len));
+    assert(__CPROVER_r_ok(*pp, len));
 
     *sig = malloc(sizeof(ECDSA_SIG));
 
