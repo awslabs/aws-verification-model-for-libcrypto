@@ -17,6 +17,10 @@ typedef struct x509_st {
     /* See https://github.com/openssl/openssl/blob/master/include/openssl/x509.h.in */
 } X509;
 
+typedef struct x509_crl_st {
+    /* See https://github.com/openssl/openssl/blob/master/include/openssl/x509.h.in */
+} X509_CRL;
+
 typedef struct x509_object_st {
     /* See https://github.com/openssl/openssl/blob/master/include/openssl/x509.h.in */
 } X509_OBJECT;
