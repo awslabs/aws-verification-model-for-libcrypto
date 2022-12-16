@@ -33,4 +33,11 @@ typedef struct x509_store_ctx_st {
     /* See https://github.com/openssl/openssl/blob/master/include/openssl/x509.h.in */
 } X509_STORE_CTX;
 
+int i2d_X509(X509 *x, unsigned char **out);
+void X509_free(X509 *a);
+struct stack_st_X509 *X509_STORE_CTX_get1_chain(const X509_STORE_CTX *ctx);
+// the following are actually macros in the original implementation
+int sk_X509_num(const struct stack_st_X509 *);
+void *sk_X509_value(const struct stack_st_X509 *, int);
+
 #endif
