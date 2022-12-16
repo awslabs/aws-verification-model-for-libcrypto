@@ -84,6 +84,8 @@ void EVP_PKEY_free(EVP_PKEY *pkey) {
     }
 }
 
+bool evp_pkey_is_valid(EVP_PKEY *pkey);
+
 /*
  * Description: The EVP_PKEY_CTX_new() function allocates public key algorithm context using the algorithm specified in
  * pkey and ENGINE e. Return values: EVP_PKEY_CTX_new() returns either the newly allocated EVP_PKEY_CTX structure of
