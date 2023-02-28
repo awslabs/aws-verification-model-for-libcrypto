@@ -214,4 +214,7 @@ int EVP_MD_size(const EVP_MD *md);
 #define EVP_CTRL_AEAD_SET_MAC_KEY 0x17
 #define EVP_CIPH_NO_PADDING 0x100
 
+#define EVP_PKEY_RSA 6  /* NID_rsaEncryption */
+#define EVP_PKEY_EC 408 /* NID_X9_62_id_ecPublicKey */
+
 #endif
