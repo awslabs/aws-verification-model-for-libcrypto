@@ -47,6 +47,8 @@ typedef struct evp_pkey_st EVP_PKEY;
 typedef struct engine_st ENGINE;
 typedef struct rand_meth_st RAND_METHOD;
 
+#define ASN1_GENERALIZEDTIME ASN1_STRING
+
 /* This empty definition is required for BIGNUM to function properly in CBMC. */
 /*struct bignum_st {
 };*/
