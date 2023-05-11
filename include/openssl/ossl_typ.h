@@ -17,11 +17,56 @@
 #ifndef HEADER_OPENSSL_TYPES_H
 #define HEADER_OPENSSL_TYPES_H
 
+/* This is the base type that holds just about everything :-) */
+struct asn1_string_st {
+    int length;
+    int type;
+    unsigned char *data;
+    /*
+     * The value of the following field depends on the type being held.  It
+     * is mostly being used for BIT_STRING so if the input data has a
+     * non-zero 'unused bits' value, it will be handled correctly
+     */
+    long flags;
+};
+
 #ifdef NO_ASN1_TYPEDEFS
 #    define ASN1_INTEGER ASN1_STRING
+#    define ASN1_ENUMERATED ASN1_STRING
+#    define ASN1_BIT_STRING ASN1_STRING
+#    define ASN1_OCTET_STRING ASN1_STRING
+#    define ASN1_PRINTABLESTRING ASN1_STRING
+#    define ASN1_T61STRING ASN1_STRING
+#    define ASN1_IA5STRING ASN1_STRING
+#    define ASN1_UTCTIME ASN1_STRING
+#    define ASN1_GENERALIZEDTIME ASN1_STRING
+#    define ASN1_TIME ASN1_STRING
+#    define ASN1_GENERALSTRING ASN1_STRING
+#    define ASN1_UNIVERSALSTRING ASN1_STRING
+#    define ASN1_BMPSTRING ASN1_STRING
+#    define ASN1_VISIBLESTRING ASN1_STRING
+#    define ASN1_UTF8STRING ASN1_STRING
+#    define ASN1_BOOLEAN int
+#    define ASN1_NULL int
 #else
 typedef struct asn1_string_st ASN1_INTEGER;
+typedef struct asn1_string_st ASN1_ENUMERATED;
+typedef struct asn1_string_st ASN1_BIT_STRING;
+typedef struct asn1_string_st ASN1_OCTET_STRING;
+typedef struct asn1_string_st ASN1_PRINTABLESTRING;
+typedef struct asn1_string_st ASN1_T61STRING;
+typedef struct asn1_string_st ASN1_IA5STRING;
+typedef struct asn1_string_st ASN1_GENERALSTRING;
+typedef struct asn1_string_st ASN1_UNIVERSALSTRING;
+typedef struct asn1_string_st ASN1_BMPSTRING;
+typedef struct asn1_string_st ASN1_UTCTIME;
+typedef struct asn1_string_st ASN1_TIME;
+typedef struct asn1_string_st ASN1_GENERALIZEDTIME;
+typedef struct asn1_string_st ASN1_VISIBLESTRING;
+typedef struct asn1_string_st ASN1_UTF8STRING;
 typedef struct asn1_string_st ASN1_STRING;
+typedef int ASN1_BOOLEAN;
+typedef int ASN1_NULL;
 #endif
 
 #ifdef BIGNUM
@@ -48,9 +93,5 @@ typedef struct engine_st ENGINE;
 typedef struct rand_meth_st RAND_METHOD;
 
 #define ASN1_GENERALIZEDTIME ASN1_STRING
-
-/* This empty definition is required for BIGNUM to function properly in CBMC. */
-/*struct bignum_st {
-};*/
 
 #endif
