@@ -11,7 +11,7 @@
 #define X509_H
 /* x509 */
 
-#define STACK_OF(type) type
+#define STACK_OF(type) struct stack_st_##type
 
 typedef struct x509_st {
     /* See https://github.com/openssl/openssl/blob/master/include/openssl/x509.h.in */
@@ -35,9 +35,9 @@ typedef struct x509_store_ctx_st {
 
 int i2d_X509(X509 *x, unsigned char **out);
 void X509_free(X509 *a);
-struct stack_st_X509 *X509_STORE_CTX_get1_chain(const X509_STORE_CTX *ctx);
+STACK_OF(X509) * X509_STORE_CTX_get1_chain(const X509_STORE_CTX *ctx);
 // the following are actually macros in the original implementation
-int sk_X509_num(const struct stack_st_X509 *);
-void *sk_X509_value(const struct stack_st_X509 *, int);
+int sk_X509_num(const STACK_OF(X509) *);
+void *sk_X509_value(const STACK_OF(X509) *, int);
 
 #endif
