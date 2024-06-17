@@ -11,7 +11,7 @@
 #define X509_H
 /* x509 */
 
-#define STACK_OF(type) struct stack_st_##type
+#define STACK_OF(type) type
 
 typedef struct x509_st {
     /* See https://github.com/openssl/openssl/blob/master/include/openssl/x509.h.in */
