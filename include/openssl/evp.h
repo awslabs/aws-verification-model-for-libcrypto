@@ -108,6 +108,8 @@ void EVP_MD_CTX_set_flags(EVP_MD_CTX *ctx, int flags);
 int EVP_MD_CTX_test_flags(const EVP_MD_CTX *ctx, int flags);
 int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in);
 int EVP_MD_CTX_cleanup(EVP_MD_CTX *ctx);
+int EVP_EncodeBlock(unsigned char *t, const unsigned char *f, int n);
+int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n);
 
 #define EVP_MD_CTX_create() EVP_MD_CTX_new()
 #define EVP_MD_CTX_destroy(ctx) EVP_MD_CTX_free((ctx))

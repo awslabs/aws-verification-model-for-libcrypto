@@ -1118,3 +1118,64 @@ int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in) {
     if (in == NULL) return 0;
     return (int)nondet_bool();
 }
+
+/**
+ * https://docs.openssl.org/master/man3/EVP_EncodeInit/#description
+ *
+ * EVP_DecodeBlock() will decode the block of n characters of base64 data contained
+ * in f and store the result in t. 
+ */
+int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n) {
+    if (n == 0) {
+        return 0;
+    }
+    if (nondet_bool()) {
+        return -1;
+    }
+    assert(t != NULL);
+    assert(f != NULL);
+    /* > its length MUST be divisible by 4 */
+    assert(n % 4 == 0);
+
+    assert(__CPROVER_r_ok(f, n));
+
+    /* > For every 4 input bytes exactly 3 output bytes will be produced */
+    int written_length = n / 4 * 3;
+    assert(__CPROVER_w_ok(t, written_length));
+
+    /* > EVP_DecodeBlock() will return the length of the data decoded or -1 on error */
+    return n;
+}
+
+/**
+ * https://docs.openssl.org/master/man3/EVP_EncodeInit/#description
+ *
+ * EVP_EncodeBlock() encodes a full block of input data in f and of length n and
+ * stores it in t.
+ */
+int EVP_EncodeBlock(unsigned char *t, const unsigned char *f, int n) {
+    /* even if no data is passed in, should be able to write null terminator */
+    assert(__CPROVER_w_ok(t, 1));
+    if (n == 0) {
+        return 0;
+    }
+    if (nondet_bool()) {
+        return -1;
+    }
+    assert(t != NULL);
+    assert(f != NULL);
+
+    assert(__CPROVER_r_ok(f, n));
+
+    /* > For every 3 bytes of input provided 4 bytes of output data will be produced. */
+    int written_length = n / 3 * 4;
+    /* > If n is not divisible by 3 then the block is encoded as a final block of
+     * > data and the output is padded such that it is always divisible by 4 */
+    written_length += (n % 3 != 0) ? 4 : 0;
+    /* > Additionally a NUL terminator character will be added. */
+    written_length += 1;
+    assert(__CPROVER_w_ok(t, written_length));
+    /* > The length of the data generated without the NUL terminator is returned 
+     * > from the function. */
+    return written_length - 1;
+}
