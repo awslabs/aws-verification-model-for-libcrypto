@@ -1123,7 +1123,7 @@ int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in) {
  * https://docs.openssl.org/master/man3/EVP_EncodeInit/#description
  *
  * EVP_DecodeBlock() will decode the block of n characters of base64 data contained
- * in f and store the result in t. 
+ * in f and store the result in t.
  */
 int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n) {
     if (n == 0) {
@@ -1175,7 +1175,7 @@ int EVP_EncodeBlock(unsigned char *t, const unsigned char *f, int n) {
     /* > Additionally a NUL terminator character will be added. */
     written_length += 1;
     assert(__CPROVER_w_ok(t, written_length));
-    /* > The length of the data generated without the NUL terminator is returned 
+    /* > The length of the data generated without the NUL terminator is returned
      * > from the function. */
     return written_length - 1;
 }
