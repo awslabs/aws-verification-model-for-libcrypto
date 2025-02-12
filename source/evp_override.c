@@ -1132,8 +1132,7 @@ int EVP_DecodeBlock(unsigned char *t, const unsigned char *f, int n) {
     if (nondet_bool()) {
         return -1;
     }
-    assert(t != NULL);
-    assert(f != NULL);
+
     /* > its length MUST be divisible by 4 */
     assert(n % 4 == 0);
 
@@ -1162,8 +1161,6 @@ int EVP_EncodeBlock(unsigned char *t, const unsigned char *f, int n) {
     if (nondet_bool()) {
         return -1;
     }
-    assert(t != NULL);
-    assert(f != NULL);
 
     assert(__CPROVER_r_ok(f, n));
 
