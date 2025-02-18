@@ -706,6 +706,35 @@ const EVP_MD *EVP_sha512() {
     return &md;
 }
 
+EVP_MD *EVP_MD_fetch(OSSL_LIB_CTX *ctx, const char *algorithm, const char *properties) {
+    // Assume this method is always called without a library context
+    assert(ctx != NULL);
+
+    // Reuse the old initialization values to set value
+    EVP_MD *md_value = NULL;
+    if (algorithm == "MD5") {
+        md_value = EVP_md5();
+    } else if (algorithm == "SHA1") {
+        md_value = EVP_sha1();
+    } else if (algorithm == "SHA224") {
+        md_value = EVP_sha224();
+    } else if (algorithm == "SHA256") {
+        md_value = EVP_sha256();
+    } else if (algorithm == "SHA384") {
+        md_value = EVP_sha256();
+    } else if (algorithm == "SHA512") {
+        md_value = EVP_sha512();
+    }
+
+    if (md_value) {
+        EVP_MD *md = malloc(sizeof(EVP_MD));
+        *md        = *md_value;
+        return md;
+    } else {
+        return NULL;
+    }
+}
+
 /* Description: Return the size of the message digest when passed an EVP_MD or an EVP_MD_CTX structure, i.e. the size of
  * the hash.
  */
