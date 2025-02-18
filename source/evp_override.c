@@ -722,7 +722,7 @@ EVP_MD *EVP_MD_fetch(OSSL_LIB_CTX *ctx, const char *algorithm, const char *prope
     } else if (strcmp(algorithm, "SHA256") == 0) {
         md_value = EVP_sha256();
     } else if (strcmp(algorithm, "SHA384") == 0) {
-        md_value = EVP_sha256();
+        md_value = EVP_sha384();
     } else if (strcmp(algorithm, "SHA512") == 0) {
         md_value = EVP_sha512();
     }
