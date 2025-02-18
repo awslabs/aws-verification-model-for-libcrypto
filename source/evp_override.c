@@ -19,6 +19,7 @@
 #include <openssl/kdf.h>
 #include <openssl/rsa.h>
 
+#include <string.h>
 #include <assert.h>
 
 #define DEFAULT_IV_LEN 12  // For GCM AES and OCB AES the default is 12 (i.e. 96 bits).
@@ -712,17 +713,17 @@ EVP_MD *EVP_MD_fetch(OSSL_LIB_CTX *ctx, const char *algorithm, const char *prope
 
     // Reuse the old initialization values to set value
     EVP_MD *md_value = NULL;
-    if (algorithm == "MD5") {
+    if (strcmp(algorithm, "MD5") == 0) {
         md_value = EVP_md5();
-    } else if (algorithm == "SHA1") {
+    } else if (strcmp(algorithm, "SHA1") == 0) {
         md_value = EVP_sha1();
-    } else if (algorithm == "SHA224") {
+    } else if (strcmp(algorithm, "SHA224") == 0) {
         md_value = EVP_sha224();
-    } else if (algorithm == "SHA256") {
+    } else if (strcmp(algorithm, "SHA256") == 0) {
         md_value = EVP_sha256();
-    } else if (algorithm == "SHA384") {
+    } else if (strcmp(algorithm, "SHA384") == 0) {
         md_value = EVP_sha256();
-    } else if (algorithm == "SHA512") {
+    } else if (strcmp(algorithm, "SHA512") == 0) {
         md_value = EVP_sha512();
     }
 
