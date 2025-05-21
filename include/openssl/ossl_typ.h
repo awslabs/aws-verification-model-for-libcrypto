@@ -69,6 +69,17 @@ typedef int ASN1_BOOLEAN;
 typedef int ASN1_NULL;
 #endif
 
+/* From https://github.com/openssl/openssl/blob/master/include/crypto/asn1.h */
+struct asn1_object_st {
+    const char *sn, *ln;
+    int nid;
+    int length;
+    const unsigned char *data;
+    int flags;
+};
+
+typedef struct asn1_object_st ASN1_OBJECT;
+
 #ifdef BIGNUM
 #    undef BIGNUM
 #endif
