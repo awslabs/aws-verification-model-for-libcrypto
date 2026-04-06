@@ -49,5 +49,8 @@ int BN_bn2bin(const BIGNUM *a, unsigned char *to);
 int BN_num_bits(const BIGNUM *a);
 
 int BN_is_zero(BIGNUM *a);
+int BN_is_one(const BIGNUM *a);
+int BN_sub_word(BIGNUM *a, unsigned long w);
+int BN_cmp(const BIGNUM *a, const BIGNUM *b);
 
 #endif

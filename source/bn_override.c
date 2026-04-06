@@ -122,3 +122,37 @@ int BN_bn2bin(const BIGNUM *a, unsigned char *to) {
     assert(to != NULL);
     return nondet_int();
 }
+
+/*
+ * Description: BN_is_one() tests if a equals 1.
+ * Return values: Returns 1 if the condition is true, 0 otherwise.
+ */
+int BN_is_one(const BIGNUM *a) {
+    assert(a != NULL);
+    int result;
+    __CPROVER_assume(result == 0 || result == 1);
+    return result;
+}
+
+/*
+ * Description: BN_sub_word() subtracts w from a.
+ * Return values: 1 for success, 0 on error.
+ */
+int BN_sub_word(BIGNUM *a, unsigned long w) {
+    assert(bignum_is_valid(a));
+    int result;
+    __CPROVER_assume(result == 0 || result == 1);
+    return result;
+}
+
+/*
+ * Description: BN_cmp() compares a and b.
+ * Return values: -1 if a < b, 0 if a == b, 1 if a > b.
+ */
+int BN_cmp(const BIGNUM *a, const BIGNUM *b) {
+    assert(a != NULL);
+    assert(b != NULL);
+    int result;
+    __CPROVER_assume(result >= -1 && result <= 1);
+    return result;
+}
