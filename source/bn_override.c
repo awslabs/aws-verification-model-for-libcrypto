@@ -129,7 +129,9 @@ int BN_bn2bin(const BIGNUM *a, unsigned char *to) {
  */
 int BN_is_one(const BIGNUM *a) {
     assert(a != NULL);
-    return nondet_bool();
+    int result;
+    __CPROVER_assume(result == 0 || result == 1);
+    return result;
 }
 
 /*
@@ -138,7 +140,9 @@ int BN_is_one(const BIGNUM *a) {
  */
 int BN_sub_word(BIGNUM *a, unsigned long w) {
     assert(bignum_is_valid(a));
-    return 1;
+    int result;
+    __CPROVER_assume(result == 0 || result == 1);
+    return result;
 }
 
 /*
